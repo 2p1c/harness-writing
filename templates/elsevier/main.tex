@@ -1,0 +1,72 @@
+%% Elsevier Article Template
+\documentclass[review]{elsarticle}
+
+\usepackage{lineno,hyperref}
+\modulolinenumbers[5]
+
+\journal{Journal Name}
+
+%% Essential packages
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{cite}
+\usepackage{url}
+
+%% Journal-specific packages (uncomment as needed)
+% \usepackage{algorithm}
+% \usepackage{algorithmic}
+% \usepackage{booktabs}
+% \usepackage{multirow}
+
+\begin{document}
+
+\begin{frontmatter}
+
+%% Title of your paper
+\title{Your Paper Title Here}
+
+%% Author names and affiliations (uncomment template below)
+\author[1]{First Author\corref{cor1}}
+\author[2]{Second Author}
+
+\affiliation[1]{organization={Department, University},
+                city={City},
+                state={State},
+                country={Country}}
+
+\affiliation[2]{organization={Department, University},
+                city={City},
+                state={State},
+                country={Country}}
+
+\cortext[cor1]{Corresponding author}
+
+%% Abstract
+\input{sections/abstract}
+
+%% Keywords
+\begin{keyword}
+keyword1 \sep keyword2 \sep keyword3 \sep keyword4 \sep keyword5
+\end{keyword}
+
+\end{frontmatter}
+
+\linenumbers
+
+%% Main content sections
+\input{sections/introduction}
+\input{sections/methodology}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/conclusion}
+
+%% Acknowledgments (optional)
+\section*{Acknowledgments}
+The authors would like to thank...
+
+%% References
+\bibliographystyle{elsarticle-num}
+\bibliography{references}
+
+\end{document}

@@ -1,0 +1,37 @@
+# Academic Writing Template - Content Exclusions
+# Keep folder structure, ignore personal content
+
+# Personal corpus and references
+corpus/*
+!corpus/.gitkeep
+
+# Draft materials
+drafts/*
+!drafts/.gitkeep
+
+# Manuscript content
+manuscripts/*
+!manuscripts/.gitkeep
+
+# Figure collections
+figures/*
+!figures/.gitkeep
+
+# Temporary files
+*.tmp
+*.bak
+~*
+
+# LaTeX temporary files
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+
+# Generated documents
+*.pdf
+*.docx
+!templates/*.pdf
+!templates/*.docx
