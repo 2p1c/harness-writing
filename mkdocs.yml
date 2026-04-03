@@ -1,0 +1,24 @@
+site_name: Awesome Code
+site_description: AI编程助手配置与技巧集
+site_url: https://github.com/anomalyco/awesome-code
+
+theme:
+  name: material
+  palette: 
+    - media: "(prefers-color-scheme: light)"
+      primary: indigo
+      accent: indigo
+    - media: "(prefers-color-scheme: dark)"
+      primary: deep purple
+      accent: deep purple
+
+nav:
+  - 首页: index.md
+  - 配置指南: CLAUDE.md
+  - Copilot指令: copilot-instructions.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
