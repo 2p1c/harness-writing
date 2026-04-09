@@ -1,6 +1,6 @@
 ---
 name: research-paper-writer
-description: End-to-end research paper writing orchestration. Triggers when user says "write paper", "help me with my paper", "start a new paper project", or uses /newpaper command. Orchestrates the complete workflow: outline → section writing → review → revision → final compilation.
+description: End-to-end research paper writing orchestration. Triggers when user says "写论文", "开始写作论文", "write paper", "help me with my paper", "start a new paper project", or uses /newpaper command. **MANDATORY: Collect research materials before generating outline.** Orchestrates the complete workflow: materials → outline → section writing → review → revision → final compilation.
 ---
 
 # Research Paper Writer
@@ -18,6 +18,14 @@ Orchestrate the complete research paper writing workflow from topic to submissio
                     └────────┬─────────┘
                              │
                              ▼
+┌─────────────────────────────────────────────────┐
+│       MATERIALS COLLECTION (MANDATORY)           │
+│  Request research data, literature, notes       │
+│  User provides all relevant materials          │
+│  → Proceed only after materials received       │
+└─────────────────────┬───────────────────────────┘
+                      │
+                      ▼
 ┌─────────────────────────────────────────────────┐
 │           OUTLINE PHASE                          │
 │  /outline <topic> → Generate IMRAD structure   │
@@ -51,7 +59,7 @@ Orchestrate the complete research paper writing workflow from topic to submissio
 
 ## Project Initialization
 
-When user initiates `/newpaper`:
+When user initiates `/newpaper` or says "开始写作[topic]的论文":
 
 1. **Create project structure**:
    ```
@@ -75,10 +83,21 @@ When user initiates `/newpaper`:
    - Target journal
    - Research domain/field
 
-3. **Set project context**:
+3. **Collect research materials** (MANDATORY step — do NOT skip to outline):
+   - Ask user to provide all relevant materials such as:
+     - Experimental data, simulation results, or measurement records
+     - Existing literature, references, or reading notes
+     - Drafts, outlines, or previous versions
+     - Problem descriptions, research questions, or hypothesis statements
+     - Any supplementary materials (images, tables, figures)
+   - If user has NOT yet gathered materials, **prompt them to do so first** before proceeding
+   - If user provides partial materials, acknowledge what was received and ask if there is more
+
+4. **Set project context**:
    - Create project.yaml with metadata
+   - Store collected materials in the project directory
    - Inform user of project location
-   - Prompt for next step (usually `/outline`)
+   - Proceed to outline generation only after materials are collected
 
 ## Section Writing Order
 
