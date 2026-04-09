@@ -21,6 +21,8 @@ figures/*
 *.tmp
 *.bak
 ~*
+*.swp
+*.swo
 
 # LaTeX temporary files
 *.aux
@@ -29,9 +31,28 @@ figures/*
 *.toc
 *.bbl
 *.blg
+*.synctex.gz
+*.nav
+*.snm
+*.fdb_latexmk
+*.fls
 
 # Generated documents
 *.pdf
 *.docx
 !templates/*.pdf
 !templates/*.docx
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Editor configs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local settings (contains permissions/credentials)
+.claude/settings.local.json
