@@ -54,5 +54,15 @@ Thumbs.db
 .vscode/
 .idea/
 
+# NPM package output (skills are distributed via npm, not git)
+skills/
+*.tgz
+node_modules/
+
+# NPM publishing config (maintained locally for releases)
+package.json
+.npmignore
+scripts/
+
 # Local settings (contains permissions/credentials)
 .claude/settings.local.json
