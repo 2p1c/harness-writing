@@ -1,8 +1,16 @@
-# Academic Writing Template for Engineering Research
+# ✍️ Academic Writing Template for Engineering Research
 
-专为理工科英文学术论文设计的写作模版仓库，集成 Elsevier 期刊格式、LaTeX 编译流程、AI 写作辅助技能，以及**对抗性文本审查系统**。
+[![npm version](https://img.shields.io/npm/v/@2p1c/harness-writing?color=2f81f7)](https://www.npmjs.com/package/@2p1c/harness-writing)
+![license](https://img.shields.io/npm/l/@2p1c/harness-writing)
+![node](https://img.shields.io/badge/node-%3E%3D18-3fb950)
+![skills](https://img.shields.io/badge/skills-29-orange)
 
-## 快速开始
+> 专为理工科英文学术论文设计的写作模版仓库，集成 Elsevier 期刊格式、LaTeX 编译流程、AI 写作辅助技能，以及对抗性文本审查系统。  
+> "Academic paper writing template for engineering research with Elsevier format, LaTeX, AI writing skills, and adversarial text review."
+
+![Workflow](docs/assets/readme-workflow.svg)
+
+## 🚀 快速开始
 
 ### 第一步：安装技能包
 
@@ -85,7 +93,7 @@ Restart your agent after installation to load the new skills.
 
 ---
 
-## 核心功能
+## 🌟 核心功能
 
 | 功能 | 说明 |
 |------|------|
@@ -97,7 +105,7 @@ Restart your agent after installation to load the new skills.
 | **一键 PDF 编译** | 完整的 LaTeX → BibTeX → PDF 工作流 |
 | **引用管理** | BibTeX 格式验证，引用一致性检查 |
 
-## 斜杠命令参考
+## 🧭 命令/短语触发参考
 
 | 命令 | 功能 | 示例 |
 |------|------|------|
@@ -108,8 +116,11 @@ Restart your agent after installation to load the new skills.
 | `/cite <作者年份>` | 添加引用 | `/cite LeCun 2015` |
 | `/figure <描述>` | 生成图表代码 | `/figure 系统架构图` |
 | `/compile` | 编译 PDF | `/compile` |
+| `/paper-branch <论文题目>` 或自然语言 | 按论文题目创建独立分支（复用 Git Flow 分支技能） | `创建一篇新论文：基于深度学习的医学影像诊断研究` 或 `/paper-branch 基于深度学习的医学影像诊断研究` |
+| `/paper-checkpoint` 或自然语言 | 结束本次写作并提交阶段进度（复用 git-commit） | `今天就写到这了` 或 `/paper-checkpoint` |
+| `/paper-progress` 或自然语言 | 基于最近提交历史回顾论文写作进度 | `我上次写到哪里了` 或 `/paper-progress` |
 
-## Skills
+## 🧩 Skills
 
 | Skill | Trigger | Description |
 |-------|---------|-------------|
@@ -130,7 +141,7 @@ Restart your agent after installation to load the new skills.
 
 Plus 14 superpowers: brainstorming, executing-plans, test-driven-development, systematic-debugging, writing-plans, verification-before-completion, and more.
 
-## 项目结构
+## 🗂️ 项目结构
 
 ```
 harness-writing/
@@ -141,7 +152,7 @@ harness-writing/
 └── CLAUDE.md                   # AI 助手指南
 ```
 
-## 故障排除
+## 🛠️ 故障排除
 
 | 问题 | 解决方案 |
 |------|----------|
@@ -151,12 +162,12 @@ harness-writing/
 | 编译后引用显示 `[?]` | 运行 `make clean && make paper` |
 | `/preview` 无法启动 | 确认已安装 `latexmk` 和 `mactex` |
 
-## Uninstall
+## 🧹 Uninstall
 
 ```bash
 npm uninstall -g @2p1c/harness-writing
 ```
 
-## License
+## 📄 License
 
 MIT
