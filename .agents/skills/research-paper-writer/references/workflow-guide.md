@@ -25,6 +25,14 @@ This creates:
 - Template structure with LaTeX files
 - `project.yaml` for metadata
 
+### Step 1.3: Import Literature Context (Optional but Recommended)
+
+Before outline generation, ask whether to enable Zotero import:
+
+- "是否启用 `zotero-context-injector`？"
+
+If yes, generate a context pack from a specific Zotero collection and query, then treat it as input material for `/outline` and `/write`.
+
 ---
 
 ## Phase 2: Outline Generation

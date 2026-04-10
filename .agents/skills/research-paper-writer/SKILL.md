@@ -1,6 +1,6 @@
 ---
 name: research-paper-writer
-description: End-to-end research paper writing orchestration. Triggers when user says "写论文", "开始写作论文", "write paper", "help me with my paper", "start a new paper project", or uses /newpaper command. **MANDATORY: Collect research materials before generating outline.** Orchestrates the complete workflow: materials → outline → section writing → review → revision → final compilation.
+description: 'End-to-end research paper writing orchestration. Triggers when user says "写论文", "开始写作论文", "write paper", "help me with my paper", "start a new paper project", or uses /newpaper command. **MANDATORY: Collect research materials before generating outline.** Orchestrates the complete workflow: materials → outline → section writing → review → revision → final compilation.'
 ---
 
 # Research Paper Writer
@@ -84,6 +84,9 @@ When user initiates `/newpaper` or says "开始写作[topic]的论文":
    - Research domain/field
 
 3. **Collect research materials** (MANDATORY step — do NOT skip to outline):
+   - Ask this consent question before moving on:
+     - "是否启用 `zotero-context-injector`？我可以读取你指定 Zotero collection 下的 PDF 并生成写作上下文包。"
+   - If user agrees, invoke `zotero-context-injector` to import Zotero materials first.
    - Ask user to provide all relevant materials such as:
      - Experimental data, simulation results, or measurement records
      - Existing literature, references, or reading notes

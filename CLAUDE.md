@@ -25,6 +25,10 @@ Academic Writing Template for **Engineering & Technical Research** - A specializ
 | `research-paper-writer` | Orchestrate full paper workflow | `/newpaper`, "写论文" |
 | `literature-manager` | Manage citations and references | `/cite`, "添加引用" |
 | `figure-integrator` | Generate and format figures | `/figure`, "图表" |
+| `zotero-context-injector` | Import Zotero collection PDFs into writing context packs | "Zotero", "文献库", "PDF上下文", "导入Zotero资料" |
+| `paper-branch-by-title` | Create paper-specific branch from paper title using git-flow branch workflow | "创建新论文", "new paper", "新开一篇论文" |
+| `paper-session-checkpoint-commit` | Commit end-of-session paper progress with touched file paths using git-commit | "结束", "今天就写到这了", "done for today" |
+| `paper-writing-progress-review` | Infer current writing status from recent commits and paper file history | "我上次写到哪里了", "查看论文写作进度", "resume paper writing" |
 
 ## Commands
 
