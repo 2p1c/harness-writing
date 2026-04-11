@@ -1,5 +1,18 @@
 # ✍️ Academic Writing Template for Engineering Research
 
+<!-- changelog -->
+<details open>
+<summary>📝 Changelog</summary>
+<p style="font-size:0.85em; color:#666;">
+
+**2026-04-11** `latex-live-preview`: 重写预览服务器，移除 `pdf-live-server`/`fswatch` 外部依赖，改为内置 Node.js 轮询，支持状态指示灯和浏览器自动刷新
+
+</p>
+</details>
+<!-- /changelog -->
+
+
+
 [![npm version](https://img.shields.io/npm/v/@2p1c/harness-writing?color=2f81f7)](https://www.npmjs.com/package/@2p1c/harness-writing)
 ![license](https://img.shields.io/npm/l/@2p1c/harness-writing)
 ![node](https://img.shields.io/badge/node-%3E%3D18-3fb950)
