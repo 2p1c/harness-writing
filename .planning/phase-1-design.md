@@ -593,37 +593,41 @@ skills/aw-orchestrator/SKILL.md      # Master orchestrator (glues all together)
 
 ---
 
-## Open Questions Before Implementation
+## Open Questions — RESOLVED
 
-These need your decision before coding starts:
+| # | Question | Decision | Rationale |
+|---|----------|----------|-----------|
+| 1 | Research Brief persistence | `.planning/research-brief.json` + `.gitignore` | Project-specific, git-tracked but not pushed |
+| 2 | Literature search method | Zotero API primary + web search fallback | User has Zotero library; good PDF reading comprehension |
+| 3 | Initial paper count | 20 papers | Balanced speed vs coverage |
+| 4 | Quick mode | `/aw-init --quick` skips Discuss checkpoints | For experienced users who know their research |
 
-1. **Where does `research-brief.json` persist?** In `.planning/` (git-tracked) or `~/.gsd/` (global)?
+### Zotero Integration Notes
 
-2. **Should research-agent search the web live, or use a local Zotero library?** (Or both?)
+Research Agent uses:
+1. **Zotero API** (`https://api.zotero.org`) to fetch library items
+2. **PDF content extraction** via `pdfminer.six` or similar
+3. **Reading comprehension** via sub-agents that summarize + extract key claims
 
-3. **How many papers should Research Agent analyze initially?** (30? 50? 100?)
+PDF reading pipeline:
+```
+Zotero Item → PDF URL/attachment → Download/Extract → Summarize → Extract Claims → Store in Literature.md
+```
 
-4. **Should we implement a "quick mode" that skips Discuss checkpoints for fast prototyping?**
+### Quick Mode Flag
 
----
-
-## Next Steps
-
-After Phase 1 design is approved:
-1. Create skill files for all 8 skills
-2. Implement orchestrator logic
-3. Test with a real paper project
-4. Iterate based on feedback
-
-**Then Phase 2:** Implement wave-based execution engine for chapter writing.
+```bash
+/aw-init --quick    # Skip all Discuss checkpoints, run full pipeline
+/aw-init             # Interactive mode with Discuss checkpoints (default)
+```
 
 ---
 
 ## Status
 
 - [x] Phase 1 design drafted
-- [ ] Discuss with user → resolve open questions
-- [ ] User approves design
+- [x] Discuss with user → resolve open questions
+- [x] User approves design
 - [ ] Implement Phase 1 skills
 - [ ] Test with real paper
 - [ ] Phase 1 complete → proceed to Phase 2

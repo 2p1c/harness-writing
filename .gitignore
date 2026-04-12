@@ -66,3 +66,9 @@ scripts/
 
 # Local settings (contains permissions/credentials)
 .claude/settings.local.json
+
+# GSDAW local-only planning files (not pushed to remote)
+.planning/research-brief.json
+.planning/literature.md
+.planning/methodology.md
+.planning/research-briefs/
