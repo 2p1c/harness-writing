@@ -254,7 +254,31 @@ options:
 
 #### If user selects "确认":
 
-Proceed to `aw-planner` (or inform user that the GSDAW orchestrator will proceed).
+1. Write consensus notes to `.planning/discuss-2-summary.md`:
+   ```markdown
+   # Discuss-2 Summary
+
+   **Generated:** [ISO timestamp]
+   **Status:** All checks passed
+
+   ## Consensus
+
+   - Gap Alignment: ✅ Confirmed
+   - Baseline Coverage: ✅ [N] baselines verified in literature
+   - Dataset Feasibility: ✅ All datasets confirmed
+   - Method Validation: ✅ Approach grounded in literature
+
+   ## Key Findings
+
+   - [finding 1]
+   - [finding 2]
+
+   ## User Notes
+
+   (Any user-provided notes or adjustments)
+   ```
+
+2. Proceed to `aw-planner` (or inform user that the GSDAW orchestrator will proceed).
 
 #### If user selects "需要调整":
 

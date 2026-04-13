@@ -598,21 +598,40 @@ skills/aw-orchestrator/SKILL.md      # Master orchestrator (glues all together)
 | # | Question | Decision | Rationale |
 |---|----------|----------|-----------|
 | 1 | Research Brief persistence | `.planning/research-brief.json` + `.gitignore` | Project-specific, git-tracked but not pushed |
-| 2 | Literature search method | Zotero API primary + web search fallback | User has Zotero library; good PDF reading comprehension |
+| 2 | Literature search method | Local SQLite (priority) → Zotero API → PDF folder | Three-tier cascade, no API key needed for local Zotero; verified working |
+| 5 | Distribution format | npm package (`harness-writing`) | `npx skills add harness-writing` auto-discovers all `skills/` subdirectories as individual skills |
 | 3 | Initial paper count | 20 papers | Balanced speed vs coverage |
 | 4 | Quick mode | `/aw-init --quick` skips Discuss checkpoints | For experienced users who know their research |
 
 ### Zotero Integration Notes
 
-Research Agent uses:
-1. **Zotero API** (`https://api.zotero.org`) to fetch library items
-2. **PDF content extraction** via `pdfminer.six` or similar
-3. **Reading comprehension** via sub-agents that summarize + extract key claims
+Three-tier literature search cascade:
 
-PDF reading pipeline:
+1. **Local Zotero SQLite** (priority — no API key needed)
+   - Read `~/Zotero/zotero.sqlite` directly
+   - PDFs from `~/Zotero/storage/`
+   - Uses `build_zotero_context.py` (verified working with pypdf 6.10.0)
+
+2. **Zotero HTTP API** (fallback — requires API key)
+   - Ask user for `ZOTERO_API_KEY`
+   - `https://api.zotero.org` with 100 req/s rate limit
+
+3. **User-provided PDF folder** (last resort)
+   - User points to a folder of `.pdf` files
+   - Extract with `pypdf` or `pdf` skill
+
+PDF reading pipeline (verified):
 ```
-Zotero Item → PDF URL/attachment → Download/Extract → Summarize → Extract Claims → Store in Literature.md
+Local SQLite → storage/{key}/file.pdf → markitdown → structured Markdown
+                                                         ↓
+                                          Sub-agent analyze: method, dataset, results, limitations
+                                                         ↓
+                                          Evidence passage ranking (keyword hits + length score)
+                                                         ↓
+                                          Store in Literature.md
 ```
+
+**markitdown** (`conda install -c conda-forge markitdown`) converts PDFs to Markdown with headers, lists, and tables preserved — cleaner for agent analysis than raw pypdf text.
 
 ### Quick Mode Flag
 
@@ -628,6 +647,30 @@ Zotero Item → PDF URL/attachment → Download/Extract → Summarize → Extrac
 - [x] Phase 1 design drafted
 - [x] Discuss with user → resolve open questions
 - [x] User approves design
-- [ ] Implement Phase 1 skills
-- [ ] Test with real paper
+- [x] npm package distribution architecture confirmed
+- [x] Three-tier Zotero cascade verified (local SQLite + API + PDF folder)
+- [x] Implement Phase 1 skills (all 8 skills in `skills/` dir)
+- [x] Create `package.json` for npm publishing
+- [ ] Test `/aw-init` with real paper project
 - [ ] Phase 1 complete → proceed to Phase 2
+
+## npm Package Structure
+
+```
+harness-writing/                 # npm package root
+├── package.json                 # `npm publish` ready
+├── skills/                      # ← npx skills add auto-scans this
+│   ├── aw-questioner/
+│   ├── aw-discuss-1/
+│   ├── aw-discuss-2/
+│   ├── aw-discuss-3/
+│   ├── aw-research/
+│   ├── aw-methodology/
+│   ├── aw-planner/
+│   └── aw-orchestrator/
+├── scripts/
+│   └── build_zotero_context.py  # Shared literature extraction tool
+└── README.md
+```
+
+**Install:** `npx skills add harness-writing` → discovers all `skills/` subdirectories as individual commands (`/aw-init`, `/aw-questioner`, etc.)
