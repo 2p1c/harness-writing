@@ -4,6 +4,10 @@
 
 ---
 
+**Languages:** [English](./README.md) · [简体中文](./README.zh-CN.md) · [日本語](./README.ja.md) · [Français](./README.fr.md)
+
+---
+
 ## Install (one command)
 
 ```bash
@@ -11,6 +15,58 @@ npm install -g @2p1c/harness-writing
 ```
 
 Restart your Claude Code session after install. All skills auto-discover.
+
+---
+
+## Prerequisites
+
+GSDAW requires LaTeX and optionally markitdown. Install before first use.
+
+### LaTeX (required)
+
+**macOS:**
+```bash
+brew install --cask mactex
+```
+
+**Linux (Debian/Ubuntu):**
+```bash
+sudo apt install texlive-latex-base latexmk
+```
+
+**Windows (WSL2 recommended):**
+```bash
+# In WSL2
+sudo apt install texlive-latex-base latexmk
+```
+> Or install [TeX Live](https://www.tug.org/texlive/) natively on Windows.
+
+### markitdown — PDF extraction (optional)
+
+markitdown converts PDFs to clean Markdown for literature review.
+
+**macOS:**
+```bash
+conda install -c conda-forge markitdown
+# or
+brew install --cask mambaforge && conda install -c conda-forge markitdown
+```
+
+**Linux:**
+```bash
+conda install -c conda-forge markitdown
+# or
+wget "https://github.com/daltonmatos/markitdown/releases/latest/download/markitdown-x86_64-linux.tar.gz" \
+  && tar -xzf markitdown-x86_64-linux.tar.gz && sudo mv markitdown /usr/local/bin/
+```
+
+**Windows:**
+```powershell
+# With conda/mamba
+conda install -c conda-forge markitdown
+
+# Or download from GitHub releases and add to PATH
+```
 
 ---
 
@@ -105,6 +161,8 @@ Methodology → Results → Introduction → Discussion → Conclusion → Abstr
 | `/aw-finalize` | Phase 3 | Compile & verify |
 | `/aw-review` | Any | Section quality review |
 | `/aw-wave-planner` | Manual | Re-plan waves from ROADMAP |
+| `/aw-pause` | Any | Save writing session (before break) |
+| `/aw-resume` | Any | Resume from checkpoint |
 
 ---
 
@@ -130,24 +188,9 @@ Methodology → Results → Introduction → Discussion → Conclusion → Abstr
     └── phase merge → sections/{chapter}.tex
 
 /aw-cite → /aw-table → /aw-figure → /aw-abstract → /aw-finalize
-```
 
----
-
-## Setup
-
-**LaTeX (required):**
-```bash
-# macOS
-brew install --cask mactex
-
-# Linux
-sudo apt install texlive-latex-base latexmk
-```
-
-**markitdown (PDF extraction, optional):**
-```bash
-conda install -c conda-forge markitdown
+/aw-pause  →  Save checkpoint before break
+/aw-resume →  Resume from checkpoint
 ```
 
 ---
@@ -185,19 +228,20 @@ Paragraph files (`sections/{chapter}/{task-id}.tex`) are individual units — on
 | Citation `[?]` | `make clean && make paper` |
 | `elsarticle.cls not found` | `tlmgr install elsarticle` |
 | `/aw-init` skill not found | Restart Claude Code after npm install |
-| markitdown not found | `conda install -c conda-forge markitdown` |
+| markitdown not found | See install instructions above for your OS |
 
 ---
 
 ## Skills Count
 
-23 skills across 3 phases.
+24 skills across 3 phases + session management.
 
 | Phase | Skills |
 |-------|--------|
 | Phase 1 — Orchestration | aw-questioner, aw-discuss-1/2/3, aw-research, aw-methodology, aw-planner, aw-orchestrator |
 | Phase 2 — Execution | aw-wave-planner, aw-execute, aw-review, aw-write-intro, aw-write-related, aw-write-methodology, aw-write-experiment, aw-write-results, aw-write-discussion, aw-write-conclusion |
 | Phase 3 — Polish | aw-cite, aw-table, aw-figure, aw-abstract, aw-finalize |
+| Session | aw-pause, aw-resume |
 
 ---
 
