@@ -3,16 +3,17 @@ name: aw-research
 description: |
   GSDAW Research Agent — literature search and analysis.
   Triggers when user approves Research Brief (after aw-discuss-1), or runs /aw-research.
-  Reads research-brief.json to understand the research question, then searches Zotero API
-  (primary) + Semantic Scholar / arXiv (fallback) for relevant papers. Analyzes top 20 papers,
-  generates literature matrix, identifies research gaps. Output: .planning/literature.md.
+  Reads research-brief.json to understand the research question, then searches the
+  user's Zotero library (local SQLite, then HTTP API fallback, then PDF folder).
+  Analyzes top 20 papers, generates literature matrix, identifies research gaps.
+  Output: .planning/literature.md.
 ---
 
 # GSDAW Research Agent
 
 ## Purpose
 
-Perform literature research and gap analysis for academic writing. Reads the Research Brief to understand the research question, then searches for relevant papers using Zotero API (primary) and web search (fallback). Analyzes the top 20 most relevant papers and generates a structured Literature Summary.
+Perform literature research and gap analysis for academic writing. Reads the Research Brief to understand the research question, then searches for relevant papers using a cascade: **local Zotero SQLite → Zotero HTTP API → user-provided PDF folder**. Analyzes the top 20 most relevant papers and generates a structured Literature Summary.
 
 ## When to Trigger
 
@@ -20,40 +21,20 @@ Perform literature research and gap analysis for academic writing. Reads the Res
 - User explicitly runs `/aw-research` command
 - Parallel with `aw-methodology` agent after Discuss #1 approval
 
-## Workflow
+## Cascade Access Strategy
 
 ```
-.research-brief.json (input)
-         │
-         ▼
-┌─────────────────────────────────────────────────┐
-│  LITERATURE SEARCH                              │
-│  1. Query Zotero API (primary)                  │
-│  2. Fallback: Semantic Scholar + arXiv         │
-│  3. Collect 20+ most relevant papers            │
-└─────────────────────┬───────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────┐
-│  PAPER ANALYSIS                                 │
-│  For each paper:                                │
-│  - Extract metadata (title, authors, year)      │
-│  - Extract method, dataset, results            │
-│  - Identify limitations                         │
-│  - Map to research question                    │
-└─────────────────────┬───────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────┐
-│  GAP ANALYSIS                                    │
-│  - Identify unsolved problems                   │
-│  - Identify failed approaches                   │
-│  - Position user's research                     │
-└─────────────────────┬───────────────────────────┘
-                      │
-                      ▼
-.planning/literature.md (output)
+1. Local Zotero SQLite  (priority — no API key needed, fastest)
+        ↓ fail / not found
+2. Zotero HTTP API       (ask user for API key)
+        ↓ fail / not available
+3. User-provided PDFs    (user points to a folder of PDFs)
 ```
+
+The agent tries each step in order. At each step:
+- Success → proceed with that source
+- Failure → log reason, try next step
+- Exhausted all → report error with specific diagnosis
 
 ## Step 1: Read Research Brief
 
@@ -61,12 +42,12 @@ Read `.planning/research-brief.json` to extract:
 
 ```json
 {
-  "researchQuestion": {
+  "research_question": {
     "problem": "what problem to solve",
     "existingGaps": "why existing methods fail",
     "novelty": "what makes this work novel"
   },
-  "researchApproach": {
+  "research_approach": {
     "strategy": "high-level approach"
   },
   "constraints": {
@@ -80,48 +61,143 @@ Extract keywords for search:
 - Method/approach keywords
 - Application area keywords
 
-## Step 2: Literature Search
+## Step 2: Cascade Literature Search
 
-### Primary: Zotero API
+### Source 1: Local Zotero SQLite (Priority)
+
+**Detection:**
+
+```python
+# Auto-discover Zotero data directory
+candidates = [
+    "~/Zotero",
+    "~/Library/Application Support/Zotero",
+    "~/.zotero/zotero",
+    "~/.config/Zotero",
+]
+# Look for zotero.sqlite in candidates
+```
+
+**Zotero data structure:**
+```
+~/Zotero/
+├── zotero.sqlite          # Local database (read-only copy)
+└── storage/               # PDF attachments
+    ├── {itemKey}/
+    │   └── Authors - Year - Title.pdf
+    └── ...
+```
+
+**Script:** Use `skills/zotero-context-injector/scripts/build_zotero_context.py`
 
 ```bash
-# Get user/library items from a collection
+python3 skills/zotero-context-injector/scripts/build_zotero_context.py \
+  --zotero-data-dir "$HOME/Zotero" \
+  --collection "My Library/Your Collection" \
+  --query "keyword1 keyword2 keyword3" \
+  --max-items 20 \
+  --top-paragraphs 5 \
+  --output .planning/.zotero-temp.md \
+  --json-output .planning/.zotero-temp.json
+```
+
+**PDF Extraction:** Uses `markitdown` CLI (conda install: `conda install -c conda-forge markitdown`). Converts PDF to structured Markdown for cleaner text extraction. Falls back to `pdftotext` CLI if markitdown is not available.
+
+**If local Zotero found:**
+```
+✓ 使用本地 Zotero 数据库: ~/Zotero
+  发现 [N] 篇相关论文，开始分析...
+```
+
+**If local Zotero NOT found:**
+```
+⚠ 未检测到本地 Zotero 数据库
+  尝试下一步: Zotero HTTP API...
+```
+
+### Source 2: Zotero HTTP API (Fallback 1)
+
+**When to use:**
+- Local SQLite not found or not accessible
+- User has Zotero account with relevant papers
+
+**Setup:**
+
+1. Check environment variable:
+   ```bash
+   echo $ZOTERO_API_KEY   # If empty, try next
+   ```
+
+2. If not set, ask user:
+   ```
+   未检测到 Zotero API Key。请提供：
+   1. 你的 Zotero API Key（从 https://www.zotero.org/settings/keys 获取）
+   2. 或者你的 Zotero User ID（从 https://www.zotero.org/settings 获取）
+   ```
+
+**API Usage:**
+```bash
+# Search user's library
+curl -H "Zotero-API-Key: $ZOTERO_API_KEY" \
+  "https://api.zotero.org/users/{userID}/items?v=3&q={keywords}&limit=50&format=json"
+
+# Get items from a collection
 curl -H "Zotero-API-Key: $ZOTERO_API_KEY" \
   "https://api.zotero.org/users/{userID}/collections/{collectionID}/items?v=3&limit=100"
-
-# Or search user's entire library
-curl -H "Zotero-API-Key: $ZOTERO_API_KEY" \
-  "https://api.zotero.org/users/{userID}/items?v=3&q={keywords}&limit=50"
 ```
 
-**Zotero API Key Handling:**
-1. Check environment variable `ZOTERO_API_KEY`
-2. If not set, check `.planning/config.json` for stored credentials
-3. If no credentials available, skip Zotero and use web search directly
-4. Warn user: "No Zotero API key found. Using web search for literature."
+**Rate limit:** 100 requests/second. Add 50ms delay between requests. Handle 429 with exponential backoff.
 
-**Rate Limiting:**
-- Zotero API: 100 requests/second max
-- Add 50ms delay between requests
-- Handle 429 (rate limit) with exponential backoff
-
-### Fallback: Web Search
-
-If Zotero returns < 20 papers, search Semantic Scholar and arXiv.
-
-**Semantic Scholar API:**
-```bash
-# Search for papers
-curl "https://api.semanticscholar.org/graph/v1/paper/search?query={query}&limit=20&fields=title,authors,year,venue,abstract,methodology,datasetS,results"
-
-# Get paper by DOI
-curl "https://api.semanticscholar.org/graph/v1/paper/DOI:{doi}?fields=title,authors,year,venue,abstract,methodology,datasetS,results"
+**If API works:**
+```
+✓ 使用 Zotero API（用户库）
+  获取 [N] 篇论文，开始分析...
 ```
 
-**arXiv API:**
+**If API fails or unavailable:**
+```
+⚠ Zotero API 不可用
+  尝试下一步: 用户提供 PDF 文件夹...
+```
+
+### Source 3: User-Provided PDF Folder (Fallback 2)
+
+**When to use:**
+- No Zotero database and no API key
+- User has PDFs stored elsewhere
+
+**Ask user:**
+```
+请提供包含 PDF 文献的文件夹路径。
+例如: /Users/you/Documents/papers 或 ~/research/pdfs
+
+支持以下格式:
+- 直接的 PDF 文件（.pdf）
+- 子文件夹中的 PDF 文件
+```
+
+**Process folder:**
 ```bash
-# Search by keywords
-curl "https://export.arxiv.org/api/query?search_query=all:{keywords}&start=0&max_results=20&sortBy=relevance&sortOrder=descending"
+# Extract each PDF to Markdown using markitdown
+for pdf_path in $(find "$folder" -name "*.pdf" -type f); do
+    markitdown "$pdf_path" -o "${pdf_path%.pdf}.md"
+done
+
+# Read the generated .md files
+for md_path in $(find "$folder" -name "*.md" -type f); do
+    cat "$md_path"
+done
+```
+
+**If user provides folder:**
+```
+✓ 找到 [N] 个 PDF 文件，开始分析...
+```
+
+**If no PDFs found:**
+```
+✗ 指定的文件夹中未找到 PDF 文件
+  请确认路径正确且包含 .pdf 文件。
 ```
 
 ### Search Query Generation
@@ -136,6 +212,11 @@ Generate 3-5 search queries from research question keywords:
   3. `"neural network medical image segmentation CNN"`
   4. `"deep learning image segmentation medical applications"`
   5. `"semantic segmentation medical images deep learning"`
+
+For each source, generate queries that combine:
+- Primary problem keywords
+- Method keywords
+- Application domain
 
 ## Step 3: Paper Analysis (Top 20)
 
@@ -164,18 +245,23 @@ For each of the top 20 papers, extract:
 For papers where abstract is insufficient:
 
 ```bash
-# Download PDF from Zotero attachment
-curl -L -o paper.pdf "https://api.zotero.org/users/{userID}/items/{itemKey}/file"
+# Extract PDF to Markdown using markitdown
+markitdown "/path/to/paper.pdf" -o /tmp/paper.md
 
-# Extract text using pdfminer.six
-python3 -c "
-from pdfminer.high_level import extract_text
-text = extract_text('paper.pdf')
-print(text[:5000])  # First 5000 chars for summarization
-"
+# Read the Markdown content
+cat /tmp/paper.md
 ```
 
-**Sub-agent Summary Prompt:**
+**markitdown** produces cleaner, structured Markdown output with headers, lists, and tables preserved — easier for the agent to parse and extract key claims than raw pypdf text.
+
+**Evidence passage ranking** (used by `build_zotero_context.py`):
+```
+score = keyword_hits + min(paragraph_length, 1200) / 120000
+```
+
+Higher keyword hit rate + reasonable length → ranked higher.
+
+**Sub-agent analysis prompt:**
 ```
 Analyze this paper and extract:
 1. Research question/objective
@@ -183,6 +269,7 @@ Analyze this paper and extract:
 3. Dataset(s) used
 4. Key quantitative results
 5. Limitations identified
+6. How it relates to: [user's research question]
 
 Paper text:
 [paper_text_here]
@@ -198,6 +285,7 @@ Write to `.planning/literature.md`:
 **Research Question:** [from brief]
 **Generated:** [ISO date]
 **Papers Analyzed:** [count]
+**Source:** [local Zotero / Zotero API / PDF folder]
 
 ## Related Work by Category
 
@@ -257,6 +345,7 @@ After generating Literature Summary:
 ```
 文献调研完成。
 
+来源: [local Zotero / Zotero API / PDF folder]
 已分析 [X] 篇相关论文，发现：
 - [N] 个方法类别
 - [M] 个研究空白
@@ -268,23 +357,25 @@ After generating Literature Summary:
 下一步：Discuss #2 — 一致性检查（将 Research 结果与 Methodology 对比）
 ```
 
+## Error Handling Summary
+
+| Scenario | Handling |
+|----------|----------|
+| Local Zotero found | Use `build_zotero_context.py` directly |
+| Local Zotero not found | Try Zotero HTTP API |
+| No API key | Ask user for key or PDF folder |
+| PDF folder provided | Extract + analyze PDFs with markitdown |
+| PDF extraction fails | Use abstract only, note limitation |
+| < 20 papers found | Note coverage gap, proceed with available |
+| Rate limited (429) | Wait 1s, exponential backoff retry |
+
 ## File Outputs
 
 | File | Location | Created By |
 |------|----------|------------|
 | Literature Summary | `.planning/literature.md` | aw-research |
-| Literature Cache | `.planning/.literature-cache.json` | aw-research (optional, for session reuse) |
-
-## Error Handling
-
-| Scenario | Handling |
-|----------|----------|
-| No Zotero API key | Skip Zotero, use web search only |
-| Zotero returns 0 items | Use web search immediately |
-| Web search fails | Try alternative search engine, then report error |
-| PDF extraction fails | Use abstract only, note limitation |
-| < 20 papers found | Note coverage gap, proceed with available |
-| Rate limited | Wait with backoff, retry |
+| Zotero temp JSON | `.planning/.zotero-temp.json` | build_zotero_context.py |
+| Zotero temp MD | `.planning/.zotero-temp.md` | build_zotero_context.py |
 
 ## Integration
 
@@ -299,5 +390,5 @@ aw-questioner → aw-discuss-1 → [aw-research + aw-methodology] → aw-discuss
 
 ## Usage Examples
 
-- `/aw-research`
-- (Auto-triggered after Discuss #1 approval)
+- `/aw-research` — Run after Discuss #1 approval
+- (Auto-triggered after Discuss #1 approval in orchestrator flow)

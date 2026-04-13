@@ -1,173 +1,112 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+GSDAW (Get Shit Done Academic Writing) — Spec-driven academic paper writing framework.
 
-## Repository Purpose
+## Quick Navigation
 
-Academic Writing Template for **Engineering & Technical Research** - A specialized workspace for English academic writing with Elsevier format, LaTeX compilation, and systematic writing workflows.
+| Need | Location |
+|------|----------|
+| Active paper | `manuscripts/{slug}/` |
+| Paper template | `templates/elsevier/` |
+| GSDAW skills | `skills/aw-*/` |
+| Phase designs | `.planning/phase-*-design.md` |
+| Planning docs | `.planning/*.md` |
 
-## Quick Navigation Map
-
-| Need | Location | Purpose |
-|------|----------|---------|
-| **Paper projects** | `manuscripts/` | Active paper writing projects |
-| **Templates** | `templates/elsevier/` | Elsevier LaTeX template |
-| **Corpus** | `corpus/` | Academic phrase collection |
-| **Reference docs** | `.agents/skills/*/references/` | Detailed guides per skill |
-
-## Installed Skills (Auto-triggered)
-
-| Skill | Purpose | Triggers |
-|-------|---------|----------|
-| `paper-outline-generator` | Generate IMRAD paper outlines | `/outline`, "大纲", "论文结构" |
-| `latex-paper-en` | Write LaTeX sections with Elsevier format | `/write`, "撰写章节" |
-| `academic-review` | Adversarial dual-agent text critique | `/review`, "审查", "润色" |
-| `research-paper-writer` | Orchestrate full paper workflow | `/newpaper`, "写论文" |
-| `literature-manager` | Manage citations and references | `/cite`, "添加引用" |
-| `figure-integrator` | Generate and format figures | `/figure`, "图表" |
-| `zotero-context-injector` | Import Zotero collection PDFs into writing context packs | "Zotero", "文献库", "PDF上下文", "导入Zotero资料" |
-| `paper-branch-by-title` | Create paper-specific branch from paper title using git-flow branch workflow | "创建新论文", "new paper", "新开一篇论文" |
-| `paper-session-checkpoint-commit` | Commit end-of-session paper progress with touched file paths using git-commit | "结束", "今天就写到这了", "done for today" |
-| `paper-writing-progress-review` | Infer current writing status from recent commits and paper file history | "我上次写到哪里了", "查看论文写作进度", "resume paper writing" |
-
-## Commands
-
-**All commands run inside a project directory** (`manuscripts/your-paper/`):
-
-```bash
-# Paper Writing Pipeline
-/newpaper <title>      # Initialize new paper project
-/outline <topic>        # Generate IMRAD outline
-/write <section>       # Write a section (introduction, methodology, etc.)
-/review                 # Adversarial review of current text
-/compile                # Compile to PDF (make paper)
-/check-refs             # Validate citation references
-
-# Supporting Commands
-/cite <author year>     # Add citation to references.bib
-/figure <description>   # Generate figure with PlantUML/Graphviz
-```
-
-### Compilation (Makefile)
-
-```bash
-make paper        # Full compilation with bibliography
-make quick        # Quick compilation (no bibliography)
-make word         # Export to Word via pandoc
-make clean        # Remove .aux, .bbl, .log, etc.
-make distclean     # Remove all generated files
-```
-
-## Workflow Pipeline
+## GSDAW Pipeline (3 Phases)
 
 ```
-/newpaper <title>
-    │
-    ▼
-/outline <topic>
-    │  (approve outline)
-    ▼
-/write <section> (for each section)
-    │
-    ▼
-/review (2-3 adversarial rounds)
-    │
-    ▼
-/compile
-    │
-    ▼
-PDF ready
+/aw-init              → Phase 1: Research Brief + Literature + Methodology + Plan
+/aw-execute           → Phase 2: Wave-parallel section writing
+/aw-cite              → Phase 3: Verify citations
+/aw-table             → Phase 3: Build tables (CSV → LaTeX)
+/aw-figure            → Phase 3: Generate figures (PlantUML + matplotlib)
+/aw-abstract          → Phase 3: Write abstract
+/aw-finalize          → Phase 3: make paper + verify
 ```
 
-### Writing Order
-1. Methodology (know what you did)
-2. Results (have the data)
-3. Introduction (understand context)
-4. Discussion (interpret findings)
-5. Conclusion (summarize)
-6. Abstract (write last)
+## All Commands
 
-## Architecture
+| Command | Phase | What it does |
+|---------|-------|---------------|
+| `/aw-init` | Init | Deep questioning → Research Brief → Literature + Methodology (parallel) → Plan |
+| `/aw-execute` | Phase 2 | Wave planner → parallel subagents → quality gate → merge |
+| `/aw-cite` | Phase 3 | Scan \cite{} against references.bib, auto-fix missing |
+| `/aw-table` | Phase 3 | Ask for CSV → LaTeX booktabs, auto-insert |
+| `/aw-figure` | Phase 3 | PlantUML diagrams + matplotlib plots, auto-insert |
+| `/aw-abstract` | Phase 3 | 250-word IMRAD abstract from all sections |
+| `/aw-finalize` | Phase 3 | make paper, check refs, word count, update STATE |
+| `/aw-review` | Any | Section quality review (continue / modify / pause) |
+| `/aw-wave-planner` | Manual | Re-plan waves from ROADMAP |
 
-### Project Structure (per paper)
+## Paragraph File Structure
+
+Sections are built from independent paragraph files, merged by wave executor:
+
 ```
-manuscripts/[paper-name]/
-├── project.yaml       # Metadata (title, authors, journal)
-├── outline.md        # Generated outline
-├── main.tex          # Main document
-├── references.bib    # Bibliography
+sections/
+├── intro/
+│   ├── 1-1-background.tex
+│   ├── 1-2-problem.tex
+│   ├── 1-3-contributions.tex
+│   └── 1-4-structure.tex
+├── related-work/
+├── methodology/
+├── experiment/
+├── results/
+├── discussion/
+├── conclusion/
+└── tables/
+```
+
+Each task writes one `.tex` paragraph. No two tasks write the same file in the same wave.
+
+## Project Structure (per paper)
+
+```
+manuscripts/{slug}/
+├── project.yaml
+├── main.tex
+├── references.bib
 └── sections/
-    ├── abstract.tex
-    ├── introduction.tex
-    ├── methodology.tex
-    ├── results.tex
-    ├── discussion.tex
-    └── conclusion.tex
+    ├── intro/
+    ├── related-work/
+    ├── methodology/
+    ├── experiment/
+    ├── results/
+    ├── discussion/
+    ├── conclusion/
+    └── tables/
 ```
 
-**Note**: `templates/elsevier/` is the source template. Copy it to `manuscripts/` to start a new project:
-```bash
-cp -r templates/elsevier manuscripts/my-paper
-```
-
-### Skill Structure
-```
-.agents/skills/[skill-name]/
-├── SKILL.md           # Main skill file (auto-triggered)
-├── references/        # Detailed reference docs
-├── agents/           # Sub-agents (for complex skills)
-└── scripts/           # Helper scripts
-```
-
-## Academic Review System (Adversarial Loop)
-
-The `/review` command uses a dual-agent critique system:
+## Planning Outputs
 
 ```
-Text → Critic Agent → Critique Report → Improver Agent → Improved Text
-                                            │
-                              ┌─────────────┴─────────────┐
-                              │ User decides: continue?   │
-                              └─────────────┬─────────────┘
-                                            │ Yes (max 3)
-                                            ▼
-                                      Final Text
+.planning/
+├── research-brief.json    ← /aw-init output
+├── literature.md          ← Research Agent output
+├── methodology.md         ← Methodology Agent output
+├── ROADMAP.md            ← Phase-by-phase tasks + success criteria
+├── STATE.md              ← Current phase, completion %
+├── wave-plan.md          ← Wave assignments (auto-generated)
+└── phase-*-design.md    ← GSDAW framework design docs
 ```
 
-**Critic Agent** identifies:
-- Vague language and precision issues
-- Missing citations or unsupported claims
-- Logical flow problems
-- Academic register inconsistencies
+## Writing Order
 
-**Improver Agent** refines text to address critique while preserving author voice.
+Methodology → Results → Introduction → Discussion → Conclusion → Abstract
 
-## Elsevier Format Reference
+## Elsevier Format
 
-### Document Setup
 - Document class: `\documentclass[review]{elsarticle}`
 - Bibliography: `\bibliographystyle{elsarticle-num}`
-- Packages: `amsmath`, `booktabs`, `graphicx`, `cite`, `lineno`, `hyperref`
+- Citations: `\cite{key}` → numbered `[1]`
+- Tables: booktabs (`\toprule`, `\midrule`, `\bottomrule`)
 
-### Citation Style
-- Use `\cite{key}` → numbered `[1]`
-- Use `\citealp{key1,key2}` for grouped citations
-- DO NOT use author-date format
+## Key Constraints
 
-### Table Format (booktabs)
-```latex
-\begin{tabular}{lccc}
-    \toprule
-    Header & Value & Result & Notes \\
-    \midrule
-    Data & 10.2 & 0.95 & OK \\
-    \bottomrule
-\end{tabular}
-```
-
-## Important Notes
-
-- This is a **template workspace**, not a running application
-- Skills activate via slash commands (/) or skill trigger phrases
-- Review `/review` output carefully for escalated issues (structural problems needing author attention)
-- PlantUML and Graphviz optional — `/figure` gracefully handles missing tools
+- Paragraph files are independent units — one per task, merged by wave executor
+- Wave 1 tasks have no dependencies → run in parallel
+- Later waves depend on earlier waves → sequential per wave
+- Compilation is manual (`make paper`) — not automated per wave
+- Tables need CSV from user — if not provided, leave `\placeholder{tab:name}`
+- Figures: PlantUML for diagrams, matplotlib for plots, placeholder if no data

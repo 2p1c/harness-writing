@@ -202,7 +202,7 @@ If one fails:
 
 ## Step 4: aw-discuss-2 (Regular Mode Only)
 
-**Skill**: `aw-discuss-1` (reused for consistency check)
+**Skill**: `aw-discuss-2` (consistency check)
 **Input**: `.planning/literature.md` + `.planning/methodology.md`
 **Purpose**: Ensure consistency between literature and methodology
 
@@ -275,7 +275,7 @@ Pass all three planning documents as context.
 
 ## Step 6: aw-discuss-3 (Regular Mode Only)
 
-**Skill**: `aw-discuss-1` (reused for final approval)
+**Skill**: `aw-discuss-3` (final plan approval)
 **Input**: `.planning/ROADMAP.md` + `.planning/STATE.md`
 **Purpose**: Final approval of the writing plan
 
