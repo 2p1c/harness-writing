@@ -55,7 +55,6 @@ Thumbs.db
 .idea/
 
 # NPM package output (skills are distributed via npm, not git)
-skills/
 *.tgz
 node_modules/
 
