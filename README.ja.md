@@ -1,4 +1,4 @@
-# GSDAW — Get Shit Done Academic Writing
+# GSD-AW — Get Shit Done Academic Writing
 
 **仕様主導の学術論文執筆フレームワーク。** 実証済みのパイプラインで AI エージェントを連携：質問 → 研究 → 方法論 → 計画 → 執筆 → 引用 → 図表 → 要旨 → コンパイル。
 
@@ -16,7 +16,7 @@ npm install -g @2p1c/harness-writing
 
 ## 前提環境
 
-GSDAW の動作には LaTeX が必要であり、PDF 抽出には markitdown（任意）をインストールしてください。
+GSD-AW の動作には LaTeX が必要であり、PDF 抽出には markitdown（任意）をインストールしてください。
 
 ### LaTeX（必須）
 
@@ -240,6 +240,10 @@ manuscripts/
 | セッション管理 | aw-pause, aw-resume |
 
 ---
+
+## Acknowledgments
+
+This framework was built using the **GSD** (Get Shit Done) agent orchestration methodology.  Learn more at https://github.com/gsd-build/get-shit-done.
 
 ## License
 
