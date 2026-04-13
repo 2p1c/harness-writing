@@ -1,4 +1,4 @@
-# GSDAW — Get Shit Done Academic Writing
+# GSD-AW — Get Shit Done-Academic Writing
 
 **Spec-driven academic paper writing framework.** Chain AI agents through a proven pipeline: question → research → methodology → plan → write → cite → figure → abstract → compile.
 
@@ -20,7 +20,7 @@ Restart your Claude Code session after install. All skills auto-discover.
 
 ## Prerequisites
 
-GSDAW requires LaTeX and optionally markitdown. Install before first use.
+GSD-AW requires LaTeX and optionally markitdown. Install before first use.
 
 ### LaTeX (required)
 
@@ -244,6 +244,10 @@ Paragraph files (`sections/{chapter}/{task-id}.tex`) are individual units — on
 | Session | aw-pause, aw-resume |
 
 ---
+
+## Acknowledgments
+
+This framework was built using the **GSD** (Get Shit Done) agent orchestration methodology.  Learn more at https://github.com/gsd-build/get-shit-done.
 
 ## License
 

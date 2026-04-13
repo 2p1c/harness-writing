@@ -1,4 +1,4 @@
-# GSDAW — Get Shit Done Academic Writing
+# GSD-AW — Get Shit Done Academic Writing
 
 **规范驱动的学术论文写作框架。** 通过经过验证的流程串联 AI Agent：提问 → 研究 → 方法论 → 规划 → 写作 → 引用 → 图表 → 摘要 → 编译。
 
@@ -16,7 +16,7 @@ npm install -g @2p1c/harness-writing
 
 ## 环境准备
 
-GSDAW 需要 LaTeX 环境，可选 markitdown 用于 PDF 提取。请在使用前完成安装。
+GSD-AW 需要 LaTeX 环境，可选 markitdown 用于 PDF 提取。请在使用前完成安装。
 
 ### LaTeX（必装）
 
@@ -240,6 +240,10 @@ manuscripts/
 | 会话管理 | aw-pause, aw-resume |
 
 ---
+
+## Acknowledgments
+
+This framework was built using the **GSD** (Get Shit Done) agent orchestration methodology.  Learn more at https://github.com/gsd-build/get-shit-done.
 
 ## License
 
