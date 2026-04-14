@@ -76,7 +76,7 @@ conda install -c conda-forge markitdown
 /aw-init
 ```
 
-回答 5 类问题（研究问题、研究思路、方法论、约束条件、参考资料）→ 生成研究简报。
+Answer 5 categories of questions (Research Questions, Research Approach, Methodology, Constraints, References) → Generate a Research Brief.
 
 ---
 
