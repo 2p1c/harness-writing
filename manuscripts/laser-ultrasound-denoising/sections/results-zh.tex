@@ -1,0 +1,74 @@
+\section{结果}
+\label{sec:results}
+
+%% 结果指南：
+%% - 客观呈现发现
+%% - 有效使用图表
+%% - 适当的统计分析
+%% - 与基线或现有方法比较
+%% - 突出关键发现
+
+%% 实验设置
+\subsection{实验设置}
+
+\subsubsection{数据集描述}
+我们使用...评估了我们的方法。
+
+\subsubsection{评估指标}
+使用以下指标评估性能：
+\begin{itemize}
+    \item 准确率: $\text{准确率} = \frac{TP + TN}{TP + TN + FP + FN}$
+    \item 精确率: $\text{精确率} = \frac{TP}{TP + FP}$
+    \item 召回率: $\text{召回率} = \frac{TP}{TP + FN}$
+\end{itemize}
+
+\subsubsection{基线方法}
+我们将方法与以下基线进行比较：
+\begin{itemize}
+    \item 基线1：传统方法 \cite{ref1}
+    \item 基线2：最先进方法 \cite{ref2}
+    \item 基线3：近期改进方法 \cite{ref3}
+\end{itemize}
+
+%% 主要结果
+\subsection{性能比较}
+
+表~\ref{tab:results} 显示了我们的方法与基线方法的性能比较。
+
+\begin{table}[ht]
+\centering
+\caption{测试数据集上的性能比较}
+\label{tab:results}
+\begin{tabular}{lccc}
+\hline
+方法 & 准确率 (\%) & 精确率 (\%) & 召回率 (\%) \\
+\hline
+基线1 & 85.2 & 83.1 & 87.3 \\
+基线2 & 87.9 & 86.2 & 89.1 \\
+基线3 & 89.1 & 88.5 & 90.2 \\
+\textbf{我们的方法} & \textbf{92.3} & \textbf{91.7} & \textbf{93.1} \\
+\hline
+\end{tabular}
+\end{table}
+
+%% 详细分析
+\subsection{详细分析}
+
+图~\ref{fig:performance} 展示了不同参数设置下的性能趋势。
+
+\begin{figure}[ht]
+\centering
+% \includegraphics[width=0.8\textwidth]{figures/performance_plot.pdf}
+\caption{不同参数下的性能分析}
+\label{fig:performance}
+\end{figure}
+
+%% 统计分析
+\subsection{统计分析}
+
+为确保结果的可靠性，我们进行了统计显著性检验...
+
+%% 消融研究
+\subsection{消融研究}
+
+我们进行了消融研究以理解不同组件的贡献...
