@@ -229,6 +229,42 @@
 
 ---
 
+## Phase 8: Bilingual Chinese Translation
+
+**Word target**: Same as corresponding English sections
+**Purpose**: Generate Chinese translations for all English LaTeX sections using a translation expert prompt
+
+### Tasks
+
+1. [ ] Create translation prompt template based on the provided translation instructions
+2. [ ] Translate Phase 1 — Introduction section (sections/introduction.tex → sections/introduction-zh.tex)
+3. [ ] Translate Phase 2 — Related Work section (sections/related-work.tex → sections/related-work-zh.tex)
+4. [ ] Translate Phase 3 — Methodology section (sections/methodology.tex → sections/methodology-zh.tex)
+5. [ ] Translate Phase 4 — Experiment section (sections/experiment.tex → sections/experiment-zh.tex)
+6. [ ] Translate Phase 5 — Results section (sections/results.tex → sections/results-zh.tex)
+7. [ ] Translate Phase 6 — Discussion section (sections/discussion.tex → sections/discussion-zh.tex)
+8. [ ] Translate Phase 7 — Conclusion section (sections/conclusion.tex → sections/conclusion-zh.tex)
+9. [ ] Translate Abstract (sections/abstract.tex → sections/abstract-zh.tex)
+10. [ ] Verify translation consistency for technical terms (method names, architecture terms, metrics)
+
+### Translation Prompt Template
+
+```
+你是一个中英文学术论文翻译专家，将用户输入的中文翻译成英文，或将用户输入的英文翻译成中文。对于非中文内容，将提供中文翻译结果。用户可以向你发送需要翻译的内容，你回答相应的翻译结果，你可以调整语气和风格，并考虑到某些词语的文化内涵和地区差异。同时作为翻译家，需将原文翻译成具有信达雅标准的译文。"信" 即忠实于原文的内容与意图；"达" 意味着译文应通顺易懂，表达清晰；"雅" 则追求译文的文化审美和语言的优美。目标是创作出既忠于原作精神，又符合目标语言文化和读者审美的翻译。一些缩写比如方法名字、人名视情况可不进行翻译。同时翻译时需要注意上下文一些名词的翻译结果的一致性。需要翻译的内容为：${sourceText}，请提供翻译结果并不做任何解释。
+```
+
+### Success Criteria
+- [ ] All English sections have corresponding Chinese translations
+- [ ] Technical terminology consistency maintained across all translations
+- [ ] Method names (U-Net, BM3D, etc.) handled appropriately (retained or localized consistently)
+- [ ] No untranslated English paragraphs in Chinese versions
+- [ ] Translation maintains academic tone and "信达雅" standard
+
+### Output Files
+- `sections/{chapter}-zh.tex` — Chinese translations alongside English originals
+
+---
+
 ## Supplementary Materials
 
 - [ ] GitHub repository with trained model weights and inference code
