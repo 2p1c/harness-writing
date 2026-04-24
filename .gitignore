@@ -63,11 +63,8 @@ package.json
 .npmignore
 scripts/
 
-# Local settings (contains permissions/credentials)
-.claude/settings.local.json
-
-# Project-level skills (installed by npm postinstall from skills/)
-.claude/skills/
+# Claude Code project config (local only — never push)
+.claude/
 
 # Local agent skills mirror
 .agents/
