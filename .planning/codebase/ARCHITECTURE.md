@@ -1,214 +1,161 @@
 # Architecture
 
-**Analysis Date:** 2026-04-12
+**Analysis Date:** 2026-04-24
 
 ## Pattern Overview
 
-**Overall:** Skill Orchestration System with Pipeline Processing
-
-This is not a traditional application but a **skill-based plugin system** for academic writing assistance. The architecture centers on composable skills that can be invoked via slash commands or natural language triggers, orchestrated through a central coordinator.
+**Overall:** Multi-agent orchestration with wave-based parallel task execution
 
 **Key Characteristics:**
-- Skill composition via slash commands (`/write`, `/review`, `/newpaper`, etc.)
-- Pipeline-based workflow where skills pass output to subsequent skills
-- Human-in-the-loop decision points for review and approval
-- Dual-agent critique pattern for adversarial text improvement
-- Git-aware project management with paper-specific branches
+- Orchestrator coordinates specialized subagents (research, methodology, writing)
+- Wave planner groups independent tasks for parallel execution via git worktrees
+- Quality gate after each wave before proceeding
+- Paragraph files merged into section files via `\input{}`
+- File-first state management: planning in `.planning/`, manuscript in `manuscripts/{slug}/`
 
 ## Layers
 
-**Command Layer (.claude/commands/):**
-- Purpose: Entry points that map user commands to skills
-- Location: `.claude/commands/*.md`
-- Contains: Command definitions with trigger phrases and skill invocation
-- Depends on: Skills being registered
-- Example: `write.md` invokes `latex-paper-en` skill
+**Command Routing Layer:**
+- Purpose: Translate user slash commands into skill execution contracts
+- Location: `.claude/commands/`
+- Contains: Thin command adapters with `Invoke skill` directives
+- Evidence: `.claude/commands/init.md`, `.claude/commands/write.md`, `.claude/commands/review.md`
 
-**Skill Layer (skills/):**
-- Purpose: Reusable capabilities for specific tasks
-- Location: `skills/[skill-name]/SKILL.md`
-- Contains: Skill metadata, instructions, and integration patterns
-- Depends on: Other skills (sometimes), external tools (LaTeX, Zotero)
-- Example: `latex-paper-en` for writing sections, `academic-review` for critique
+**Orchestration Layer:**
+- Purpose: Coordinate Phase 1 initialization flow
+- Location: `skills/aw-orchestrator/SKILL.md`
+- Contains: Stepwise workflow chaining questioner + discuss + research + methodology + planner + discuss
+- Evidence: `skills/aw-orchestrator/SKILL.md`
 
-**Orchestration Layer (research-paper-writer):**
-- Purpose: Coordinate multi-step workflows across skills
-- Location: `skills/research-paper-writer/SKILL.md`
-- Contains: Workflow state machine, phase transitions
-- Depends on: paper-outline-generator, latex-paper-en, academic-review
-- Used by: `/newpaper` command
+**Wave Execution Layer:**
+- Purpose: Execute writing tasks wave-by-wave with parallel subagent spawning
+- Location: `skills/aw-execute/SKILL.md`, `skills/aw-wave-planner/SKILL.md`
+- Contains: Dependency graph building, topological sort, wave grouping, worktree isolation, result merging
+- Evidence: `skills/aw-execute/SKILL.md`, `skills/aw-wave-planner/SKILL.md`
 
-**Agent Sub-Layer (agents/ within skills):**
-- Purpose: Sub-agents for complex multi-agent workflows
-- Location: `skills/[skill]/agents/*.md`
-- Contains: Prompt templates for Critic, Improver, etc.
-- Example: `skills/academic-review/agents/critic.md`, `skills/academic-review/agents/improver.md`
+**Section Writer Layer:**
+- Purpose: Generate individual paragraph files as merge units
+- Location: `skills/aw-write-intro/`, `skills/aw-write-methodology/`, `skills/aw-write-results/`, `skills/aw-write-discussion/`, `skills/aw-write-conclusion/`, `skills/aw-write-related/`, `skills/aw-write-experiment/`
+- Contains: Section-specific writing contracts and output path conventions
+- Evidence: `skills/aw-write-intro/SKILL.md`
 
-**Template Layer (templates/elsevier/):**
-- Purpose: LaTeX template and paper skeleton
-- Location: `templates/elsevier/`
-- Contains: `main.tex`, `references.bib`, section templates in `sections/`
-- Depends on: Elsevier LaTeX class
+**Phase Specialist Layer:**
+- Purpose: Produce phase artifacts (brief, literature, methodology, cite, table, figure, abstract, finalize)
+- Location: `skills/aw-questioner/`, `skills/aw-research/`, `skills/aw-methodology/`, `skills/aw-planner/`, `skills/aw-cite/`, `skills/aw-table/`, `skills/aw-figure/`, `skills/aw-abstract/`, `skills/aw-finalize/`, `skills/aw-translate/`
+- Evidence: `skills/aw-review/SKILL.md`, `skills/aw-cite/SKILL.md`
 
-**Project Layer (manuscripts/):**
-- Purpose: Active paper writing projects
-- Location: `manuscripts/[paper-name]/`
-- Contains: `project.yaml`, `main.tex`, `references.bib`, `sections/*.tex`
-- Managed by: git branches for paper isolation
+**Review Layer:**
+- Purpose: Quality gate validation after each wave
+- Location: `skills/aw-review/SKILL.md`
+- Contains: Automated checks (compile, word count, citations, placeholders), adversarial critique, user decision
+- Evidence: `skills/aw-review/SKILL.md`
+
+**Template & Build Layer:**
+- Purpose: Elsevier LaTeX template and compilation
+- Location: `templates/elsevier/`, `Makefile`
+- Contains: LaTeX skeleton, `\input{}` section structure, `paper`/`quick`/`check-refs` targets
+- Evidence: `templates/elsevier/main.tex`, `Makefile`
 
 ## Data Flow
 
-**Primary Workflow (Paper Writing Pipeline):**
-
+**Phase 1 - Initialization (`/aw-init`):**
 ```
-/newpaper <title>
-    │
-    ▼
-[research-paper-writer orchestrator]
-    │
-    ▼
-┌─────────────────────────────────────────────────┐
-│  MATERIALS COLLECTION PHASE                     │
-│  (zotero-context-injector if user agrees)       │
-└─────────────────────┬───────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────┐
-│  OUTLINE PHASE                                  │
-│  paper-outline-generator → IMRAD structure       │
-└─────────────────────┬───────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────┐
-│  WRITING PHASE                                  │
-│  latex-paper-en → LaTeX section content         │
-└─────────────────────┬───────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────┐
-│  REVIEW PHASE (Human-in-the-loop)               │
-│  academic-review (Critic → Improver loop)       │
-│  Max 3 rounds, user approves each round         │
-└─────────────────────┬───────────────────────────┘
-                      │
-                      ▼
-┌─────────────────────────────────────────────────┐
-│  COMPILATION PHASE                              │
-│  Makefile: pdflatex → bibtex → pdflatex × 2      │
-└─────────────────────────────────────────────────┘
+/aw-init
+  ├── aw-questioner → .planning/research-brief.json
+  ├── aw-discuss-1 (confirm brief)
+  ├── [aw-research + aw-methodology] (parallel)
+  ├── aw-discuss-2 (consistency check)
+  ├── aw-planner → .planning/ROADMAP.md + STATE.md
+  ├── aw-discuss-3 (final approval)
+  └── DONE → /aw-execute ready
 ```
 
-**Command Dispatch Flow:**
-
+**Phase 2 - Wave Execution (`/aw-execute`):**
 ```
-User Input: "/write introduction"
-    │
-    ▼
-.claude/commands/write.md
-    │
-    ▼
-skills/latex-paper-en (invoked)
-    │
-    ▼
-Output: LaTeX section content
+/aw-execute
+  ├── Read ROADMAP + STATE
+  ├── Wave Planner (dependency sort, wave grouping)
+  └── FOR EACH WAVE:
+        ├── Spawn aw-write-* subagents (parallel if independent, sequential on conflict)
+        ├── Wait for completion
+        ├── Merge paragraph files via \input{} → section file
+        └── Quality Gate (aw-review) → "继续/修改/暂停"
 ```
 
-**Academic Review Flow (Dual-Agent Loop):**
-
+**Phase 3 - Finalization:**
 ```
-User Text
-    │
-    ▼
-┌─────────────────┐
-│  Critic Agent   │ ← Identifies issues (no solutions)
-└────────┬────────┘
-         │ JSON critique report
-         ▼
-┌─────────────────┐
-│ Improver Agent  │ ← Refines text to fix issues
-└────────┬────────┘
-         │ JSON improved text + report
-         ▼
-      USER DECIDES (continue/stop/accept)
+/aw-cite    → Scan \cite{} → verify against references.bib
+/aw-table   → CSV → LaTeX booktabs
+/aw-figure  → PlantUML/matplotlib → figures
+/aw-abstract → IMRAD abstract from sections
+/aw-finalize → make paper, verify, update STATE
 ```
 
 ## Key Abstractions
 
-**Skill:**
-- Purpose: Encapsulates a reusable capability with trigger conditions
-- Examples: `skills/latex-paper-en/SKILL.md`, `skills/academic-review/SKILL.md`
-- Pattern: Frontmatter metadata (name, description, triggers) + markdown instructions
+**Paragraph File:**
+- Purpose: Independent writing unit written by one subagent
+- Location: `manuscripts/{slug}/sections/{chapter}/{wave}-{id}-{topic}.tex`
+- Pattern: Single `\paragraph{}` block per file, merged via `\input{}`
+- Example: `manuscripts/physics-constrained-multi-domain-denoising/sections/intro/1-1-background.tex`
 
-**Command:**
-- Purpose: Maps slash commands to skill invocations
-- Examples: `.claude/commands/write.md`, `.claude/commands/review.md`
-- Pattern: Frontmatter description + skill invocation directive
+**Wave:**
+- Purpose: Group of parallelizable independent tasks
+- Pattern: Tasks with no file overlap within same wave run in parallel via git worktrees
+- Output: `.planning/wave-plan.md`
 
-**Orchestrator Skill:**
-- Purpose: Coordinates multiple skills in a workflow
-- Examples: `skills/research-paper-writer/SKILL.md`
-- Pattern: Phase-based state machine with explicit transitions
+**Section File:**
+- Purpose: Merged collection of paragraph files for one IMRAD section
+- Pattern: `\input{paragraph-1.tex}` + `\input{paragraph-2.tex}` ...
+- Example: `manuscripts/{slug}/sections/introduction.tex` (merged from `intro/*.tex`)
 
-**Sub-Agent:**
-- Purpose: Specialized role within a multi-agent skill
-- Examples: `skills/academic-review/agents/critic.md`, `skills/academic-review/agents/improver.md`
-- Pattern: Structured prompt with input/output format specifications
+**Worktree:**
+- Purpose: Isolated git branch for parallel task execution
+- Pattern: `git worktree add ../worktrees/phase{N}-wave{M}-task{N.M} {branch}`
+- Cleaned up after wave completion
 
-**Project:**
-- Purpose: Container for a single paper with metadata and content
-- Location: `manuscripts/[paper-name]/`
-- Contains: `project.yaml`, LaTeX files, references
-- Pattern: YAML metadata + IMRAD section files
+**Research Brief:**
+- Purpose: Canonical project intent and constraints
+- Location: `.planning/research-brief.json`
+- Pattern: Structured JSON with research question, approach, methodology, constraints, materials
+
+**Quality Gate:**
+- Purpose: Checkpoint validating wave output before proceeding
+- Automated checks: LaTeX compile, word count vs target, citation resolution, placeholder scan
+- User decisions: 继续 (continue), 修改 (modify), 暂停 (pause)
 
 ## Entry Points
 
-**Slash Commands:**
-- `.claude/commands/newpaper.md` - Triggers `research-paper-writer` skill
-- `.claude/commands/outline.md` - Triggers `paper-outline-generator` skill
-- `.claude/commands/write.md` - Triggers `latex-paper-en` skill
-- `.claude/commands/review.md` - Triggers `academic-review` skill
-- `.claude/commands/cite.md` - Triggers `literature-manager` skill
-- `.claude/commands/figure.md` - Triggers `figure-integrator` skill
-- `.claude/commands/preview.md` - Triggers `latex-live-preview` skill
-- `.claude/commands/branch.md` - Triggers `git-flow-branch-creator` skill
-- `.claude/commands/commit.md` - Triggers `git-commit` skill
+**Slash Commands (`.claude/commands/`):**
+- `/aw-init` — via `init.md` → `aw-orchestrator`
+- `/aw-execute` — via `.claude/commands/` → `aw-execute`
+- `/aw-review` — manual quality review
+- `/aw-cite`, `/aw-table`, `/aw-figure`, `/aw-abstract`, `/aw-finalize` — Phase 3 tools
 
-**Natural Language Triggers:**
-- "写论文", "开始写作论文" - Invokes `research-paper-writer`
-- "大纲", "论文结构" - Invokes `paper-outline-generator`
-- "撰写章节" - Invokes `latex-paper-en`
-- "审查", "润色" - Invokes `academic-review`
-- "创建新论文" - Invokes `paper-branch-by-title`
-- "结束", "今天就写到这了" - Invokes `paper-session-checkpoint-commit`
-- "我上次写到哪里了" - Invokes `paper-writing-progress-review`
-- "Zotero", "文献库" - Invokes `zotero-context-injector`
+**Build Targets (`Makefile`):**
+- `make paper` — Full compilation with bibliography
+- `make quick` — Quick compilation without bibliography
+- `make check-refs` — Citation reference check
 
-## Error Handling
-
-**Strategy:** Graceful degradation with user-facing error messages
-
-**Patterns:**
-- Missing external tools: Skill documents requirements (e.g., LaTeX, PlantUML) and provides troubleshooting in README
-- Compilation failures: Makefile provides `check-refs` target to validate citations
-- Zotero connection: Diagnostic script `build_zotero_context.py --list-collections`
-- Review escalation: Structural/methodological issues flagged as "ESCALATION" for human resolution
+**Package Installation:**
+- `package.json` postinstall runs `scripts/install-skill-links.js`
+- Links skills to `~/.agents/skills` and commands to `~/.claude/commands`
 
 ## Cross-Cutting Concerns
 
-**Logging:** N/A (no runtime logging - this is a template/repository, not an application)
+**LaTeX Format:** Elsevier document class (`\documentclass[review]{elsarticle}`), numbered citations (`\cite{key}`), booktabs tables
 
-**Validation:**
-- Citation keys validated via `make check-refs`
-- LaTeX compilation checked via `make quick`
-- Skill schemas validated via `skill-creator/quick_validate.py`
+**Citation Management:** All `\cite{}` keys must resolve against `references.bib` (verified by `aw-cite` and quality gate)
 
-**Authentication:** N/A (no user authentication - operates on local files)
+**Git Worktrees:** Enable parallel writing without conflicts; cleaned up after wave completion
 
-**Git Integration:**
-- Paper branches via `git-flow-branch-creator`
-- Session commits via `git-commit` with file path tracking
-- Progress review via commit history analysis
+**Bilingual Support:** Papers may include `-zh` parallel directories for Chinese translation (e.g., `sections/intro-zh/`, `sections/methodology-zh/`)
+
+**State Boundaries:**
+- Planning state: `.planning/*`
+- Manuscript content: `manuscripts/{slug}/*`
+- Skill definitions: `skills/*`
 
 ---
 
-*Architecture analysis: 2026-04-12*
+*Architecture analysis: 2026-04-24*

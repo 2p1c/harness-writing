@@ -1,144 +1,152 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-04-12
+**Analysis Date:** 2026-04-24
 
-## Missing/Incomplete Implementations
+## Priority Recommendations (Most Urgent First)
 
-### Missing Script: check-prereqs.sh
+1. **Fix laser-ultrasound-denoising manuscript title**: Contains profane placeholder text in `main.tex:27`. Evidence: `nihaoNeural fucktest aaaaaaa Network-Based Denoising...`. This blocks clean compilation.
+2. **Resolve planning state drift**: SUMMARY.md claims phase 08 completed but VERIFICATION.md shows 4/9 must-haves verified with gaps in methodology-zh.tex, results-zh.tex, discussion-zh.tex, conclusion-zh.tex.
+3. **Stop false-success quality gates**: `npm test` always succeeds with no-op; `make check-style` is TODO.
+4. **Repair mkdocs.yml metadata**: Site identity is "Awesome Code" / anomalyco/awesome-code - unrelated to this repository.
 
-**Area:** `skills/latex-live-preview/`
-**Issue:** `SKILL.md` line 39 references `scripts/check-prereqs.sh` to verify prerequisites, but this script does not exist in the `scripts/` directory.
-**Files:** `skills/latex-live-preview/SKILL.md:39`
-**Impact:** Users following the SKILL.md instructions will encounter a missing file error. The prerequisite check cannot be performed as documented.
-**Fix approach:** Create `scripts/check-prereqs.sh` to verify `latexmk` and `fswatch`/`inotifywait` availability and port 3000 availability.
+## Tech Debt
 
-### Outdated Documentation: pdf-live-server
+**Release/install contract has policy drift (High):**
+- Issue: `.gitignore:62-65` excludes `package.json`, `.npmignore`, and `scripts/` while these define release behavior and `package.json:7` references `scripts/install-skill-links.js`.
+- Files: `.gitignore:62-65`, `package.json:7`, `scripts/install-skill-links.js` (now tracked, but policy conflicts remain)
+- Impact: Local git workflows can miss changes to release-critical files.
+- Fix approach: Remove release-critical files from `.gitignore`; keep ignores only for generated artifacts.
 
-**Area:** `skills/latex-live-preview/`
-**Issue:** `SKILL.md` references `pdf-live-server` as the primary server for PDF serving, but the README states the preview server was rewritten to remove external dependencies (`pdf-live-server`/`fswatch`).
-**Files:** `skills/latex-live-preview/SKILL.md:54`, `README.md:8`
-**Impact:** Documentation mismatch. The SKILL.md instructs to use `pdf-live-server` which is no longer the primary implementation.
-**Fix approach:** Update `SKILL.md` to reflect the new Node.js polling-based implementation. The `start-preview.sh` script uses `pdf-live-server` if available, otherwise falls back to Python http.server.
+**Template and workflow expectations are misaligned (High):**
+- Issue: `aw-finalize` requires sections like `related-work.tex` and `experiment.tex`, but `manuscripts/laser-ultrasound-denoising/main.tex` only wires 5 core sections (missing related_work and experiment).
+- Files: `skills/aw-finalize/SKILL.md:82-92`, `manuscripts/laser-ultrasound-denoising/main.tex:58-62`
+- Impact: Finalization checks produce false failures on laser-ultrasound-denoising.
+- Fix approach: Update template to include all required sections, or parameterize required sections by project profile.
 
-### Incomplete Makefile Target
+**Manual quality checks have placeholder implementation (Medium):**
+- Issue: `check-style` target is explicitly TODO in Makefile.
+- Files: `Makefile:46-49`
+- Impact: No automated style/lint gate for LaTeX and skill docs.
+- Fix approach: Add `latexindent`, markdown linting, spell/style checks; fail CI on violations.
 
-**Area:** `Makefile`
-**Issue:** Line 48 has a TODO comment: `"TODO: Add style checking tools"`
-**Files:** `Makefile:48`
-**Impact:** The `check-style` target is incomplete and does not perform actual style validation.
-**Fix approach:** Implement style checking (e.g., add `latexindent` for LaTeX formatting or integrate a linter).
+## Known Bugs
 
-### No Test Coverage
+**Manuscript title contains profane placeholder text (High):**
+- Symptoms: Title includes test/profane text in frontmatter.
+- Files: `manuscripts/laser-ultrasound-denoising/main.tex:27`
+- Trigger: Running `make paper` or preparing submission directly from current manuscript.
+- Workaround: Manual title rewrite before every compile/review cycle.
 
-**Area:** `package.json`
-**Issue:** Test script is a no-op: `"test": "echo \"No tests configured\" && exit 0"`
-**Files:** `package.json:8`
-**Impact:** No automated verification that skills or scripts work correctly. Risk of regressions going undetected.
-**Fix approach:** Add actual tests using an appropriate framework for the skill validation workflow.
+**Translation phase has incomplete outputs (High):**
+- Symptoms: Phase 08 SUMMARY.md claims all requirements completed, but VERIFICATION.md shows 4/9 must-haves verified.
+- Files: `.planning/phases/08-bilingual-chinese-translation/08-01-SUMMARY.md:47`, `.planning/phases/08-bilingual-chinese-translation/08-01-VERIFICATION.md:4-5`
+- Gaps: methodology-zh.tex, results-zh.tex, discussion-zh.tex, conclusion-zh.tex contain template placeholders.
+- Workaround: Re-run translation for incomplete sections or acknowledge partial completion.
 
-### No CI/CD Pipeline
-
-**Area:** Project-wide
-**Issue:** No GitHub Actions or other CI configured
-**Files:** No `.github/workflows/` directory
-**Impact:** Broken builds or skill regressions are only caught manually.
-**Fix approach:** Add GitHub Actions workflow to run basic checks on push/PR.
-
-## Documentation Issues
-
-### Wrong Path References in CLAUDE.md
-
-**Area:** `CLAUDE.md`
-**Issue:** References `.agents/skills/*/references/` but the actual directory is `skills/`
-**Files:** `CLAUDE.md:16`, `CLAUDE.md:115`
-**Impact:** AI assistant following CLAUDE.md instructions will look in the wrong directory for skill references.
-**Fix approach:** Update path references from `.agents/skills/` to `skills/`.
-
-### GitHub Path References in README
-
-**Area:** `README.md`
-**Issue:** Line 172 references `.agents/skills/zotero-context-injector/scripts/build_zotero_context.py` for troubleshooting. This path may not exist in all installations.
-**Files:** `README.md:172`
-**Impact:** Users troubleshooting Zotero issues may be directed to a non-existent path.
-**Fix approach:** Use a path that works regardless of whether skills are installed via npm or locally.
-
-## Dependency Issues
-
-### Unmanaged Python Dependencies in skill-creator
-
-**Area:** `skills/skill-creator/scripts/`
-**Issue:** `run_loop.py` and `improve_description.py` import `anthropic` package but there is no `requirements.txt` or `pyproject.toml` to manage this dependency.
-**Files:** `skills/skill-creator/scripts/run_loop.py:18`, `skills/skill-creator/scripts/improve_description.py:14`
-**Impact:** The skill-creator evaluation loop requires `anthropic` SDK but this is not documented as a prerequisite.
-**Fix approach:** Add a `requirements.txt` or document the dependency clearly in the SKILL.md.
-
-### Node.js Only Documented but Python Scripts Exist
-
-**Area:** Project-wide
-**Issue:** `package.json` specifies `"engines": {"node": ">=18.0.0"}` but several skills contain Python scripts (`skill-creator`, `zotero-context-injector`) that are not Node.js.
-**Files:** `package.json:27`, `skills/skill-creator/scripts/*.py`, `skills/zotero-context-injector/scripts/*.py`
-**Impact:** Users expecting Node.js-only setup may be confused by Python script requirements.
-**Fix approach:** Document Python dependency in README or install instructions.
-
-## Path and Configuration Issues
-
-### Hardcoded Temporary File Paths
-
-**Area:** `skills/latex-live-preview/scripts/start-preview.sh`
-**Issue:** Uses hardcoded `/tmp/` paths for log and PID files
-**Files:** `skills/latex-live-preview/scripts/start-preview.sh:9`, `skills/latex-live-preview/scripts/start-preview.sh:111`
-**Impact:** These paths may not work correctly in restricted environments (e.g., containers, some CI systems). PID file uses relative path from PROJECT_DIR but stores absolute `/tmp/` location.
-**Fix approach:** Use environment variables or a configurable temp directory. Consider XDG base directory spec.
-
-### Hardcoded User-Specific Paths in Settings
-
-**Area:** `.claude/settings.local.json`
-**Issue:** Lines 18-19 contain absolute paths with `/Users/zyt/` specific to the developer's environment
-**Files:** `.claude/settings.local.json:18-19`
-**Impact:** This file is gitignored but would break if used by another developer. However, this is expected behavior for local settings - not a critical issue.
-**Fix approach:** This is actually correct behavior (local settings should be personal). Acknowledged as working as intended.
-
-## Architecture/Design Concerns
-
-### Dual Directory Structure Confusion
-
-**Area:** Project structure
-**Issue:** Both `skills/` and `.agents/skills/` directories exist. README says `.agents/skills/` is the "原本地位置（符号链接来源）" but the `.agents/skills/` directory is not a symlink - it's a regular directory with identical content.
-**Files:** `skills/`, `.agents/skills/`, `README.md:164`
-**Impact:** Confusion about which directory is the source of truth. Could lead to editing the wrong location.
-**Fix approach:** Clarify the relationship between the two directories. If `.agents/skills/` is meant to be a symlink target, create it as such. If both are independent copies, document why.
-
-### Live Preview Hardcoded Polling
-
-**Area:** `skills/latex-live-preview/`
-**Issue:** `pdf-live-server.js` (if it exists in `.agents/skills/`) uses 1000ms fixed polling interval with no backoff or adaptive timing.
-**Files:** Potentially `.agents/skills/latex-live-preview/scripts/` (if it exists)
-**Impact:** Could cause unnecessary CPU usage on large projects.
-**Fix approach:** Implement adaptive polling or event-based file watching where available.
-
-### No Input Validation in Scripts
-
-**Area:** `scripts/install-skill-links.js`
-**Issue:** Uses `process.argv` directly with minimal validation. Assumes directories exist.
-**Files:** `scripts/install-skill-links.js`
-**Impact:** Could fail silently or unexpectedly if environment is misconfigured.
-**Fix approach:** Add proper input validation and error handling.
-
-### Large skill-creator Scripts
-
-**Area:** `skills/skill-creator/scripts/`
-**Issue:** Six Python scripts totaling 1902 lines with complex dependencies. `run_loop.py` is 332 lines and `run_eval.py` is 310 lines.
-**Files:** `skills/skill-creator/scripts/*.py`
-**Impact:** High maintenance burden. These scripts implement an entire evaluation framework.
-**Fix approach:** Consider extracting common utilities into shared modules. Some scripts could be split.
+**Finalization abstract path check is inconsistent with template layout (Medium):**
+- Issue: `aw-finalize` checks `abstract.tex` at root, while template uses `sections/abstract.tex` with `\input{sections/abstract}`.
+- Files: `skills/aw-finalize/SKILL.md:74-78`, `manuscripts/physics-constrained-multi-domain-denoising/main.tex:42`
+- Trigger: Running `/aw-finalize` on current manuscript structure.
+- Workaround: Ensure abstract is wired correctly or patch skill logic.
 
 ## Security Considerations
 
-### No Security Issues Detected
+**Over-privileged CI workflow with unconditional deploy (Medium, Operational risk):**
+- Risk: Workflow has `permissions: contents: write` and runs `mkdocs gh-deploy --force` on every push to `main`/`develop`.
+- Files: `.github/workflows/ci.yml:7-8`, `.github/workflows/ci.yml:30`
+- Current mitigation: Deployment scoped to branch push events.
+- Recommendations: Use least-privilege token scopes, require protected branch checks, gate deploy jobs behind explicit release conditions.
 
-**Area:** Project-wide
-**Status:** No hardcoded secrets found in committed files. `.gitignore` correctly excludes `settings.local.json` which may contain personal configuration.
+**Cache path uses non-ASCII tilde character (Low):**
+- Risk: `～/.cache` (full-width tilde) likely not matching expected home cache path, causing cache misses.
+- Files: `.github/workflows/ci.yml:26`
+- Recommendations: Replace with standard `~/.cache` and verify cache hit metrics.
+
+**No secret leak indicators in scanned tracked docs (Low):**
+- Risk: None detected in reviewed markdown/yaml/tex files.
+- Files: `README.md`, `CLAUDE.md`, `.planning/*`, `manuscripts/*`
+- Recommendations: Add secret scanning in CI to keep this guarantee enforceable.
+
+## Performance Bottlenecks
+
+**CI job does deployment work on every push without validation stage (Medium):**
+- Problem: Workflow runs install + `mkdocs gh-deploy --force` directly; no earlier fast-fail quality stage.
+- Files: `.github/workflows/ci.yml:21-30`
+- Cause: Pipeline is deploy-first, not validate-first.
+- Improvement path: Split into `lint/test/validate` job + gated `deploy` job.
+
+## Fragile Areas
+
+**Planning truth sources conflict (High, Process fragility):**
+- Files: `.planning/STATE.md`, `.planning/phases/08-bilingual-chinese-translation/08-01-SUMMARY.md`, `.planning/phases/08-bilingual-chinese-translation/08-01-VERIFICATION.md`
+- Why fragile: Status and completion assertions disagree (SUMMARY claims completed, VERIFICATION reports 4/9 gaps).
+- Safe modification: Treat verification artifacts as source of truth and derive summary/state from them automatically.
+- Test coverage: No automated consistency checks detected for planning artifacts.
+
+**Manuscript tracking policy conflicts with active workflow (High, Process fragility):**
+- Files: `.gitignore:13-15`, `manuscripts/laser-ultrasound-denoising/*`, `manuscripts/physics-constrained-multi-domain-denoising/*`
+- Why fragile: `.gitignore` excludes `manuscripts/*` with exceptions, but manuscripts are central outputs and actively tracked.
+- Safe modification: Review and clarify manuscript ignore policy; ensure active project is not inadvertently ignored.
+- Test coverage: No guard to detect newly ignored/untracked manuscript deliverables.
+
+## Scaling Limits
+
+**Two manuscripts with divergent states (Medium):**
+- Current capacity: `manuscripts/laser-ultrasound-denoising` (stale, profane title, incomplete Chinese translation) and `manuscripts/physics-constrained-multi-domain-denoising` (active).
+- Limit: Stale manuscript may confuse contributors or contaminate automated workflows.
+- Scaling path: Archive stale manuscript or establish clear project lifecycle policy.
+
+## Dependencies at Risk
+
+**Documentation/deploy metadata appears copied from unrelated project (High, Documentation risk):**
+- Risk: `mkdocs.yml` uses site identity "Awesome Code" and URL `https://github.com/anomalyco/awesome-code` - not matching this repository purpose.
+- Files: `mkdocs.yml:1-4`, `mkdocs.yml:15-19`
+- Impact: Published docs can mislead users and damage trust in release artifacts.
+- Migration plan: Replace with repo-accurate metadata/nav and add docs smoke test in CI.
+
+**Skill path conventions are inconsistent across docs (Medium):**
+- Risk: Mixed references to `skills/...` and `.agents/skills/...` in documentation.
+- Files: `README.md`, `CLAUDE.md`, `skills/zotero-context-injector/SKILL.md`
+- Impact: Users can follow non-portable paths and fail setup.
+- Migration plan: Define one canonical runtime path contract and lint docs for forbidden path patterns.
+
+## Missing Critical Features
+
+**No enforceable test suite for package/skills behavior (High):**
+- Problem: `npm test` always succeeds without testing anything.
+- Blocks: Safe refactoring of `skills/*`, confidence in release candidates.
+- Files: `package.json:8`
+
+**No quality gate for manuscript placeholder/profanity content (High):**
+- Problem: Profane title and placeholder text can pass through to compiled PDF.
+- Blocks: Reliable submission readiness and professional outputs.
+- Files: `manuscripts/laser-ultrasound-denoising/main.tex:27`
+
+**No automated cross-file consistency checks for planning system (Medium):**
+- Problem: `.planning` artifacts can contradict each other without detection.
+- Blocks: Trustworthy orchestration decisions for later phases.
+- Files: `.planning/STATE.md`, `.planning/phases/*/*-SUMMARY.md`, `.planning/phases/*/*-VERIFICATION.md`
+
+## Test Coverage Gaps
+
+**Install path and postinstall behavior untested (High):**
+- What's not tested: Whether `npm install -g @2p1c/harness-writing` executes setup successfully with published file list.
+- Files: `package.json`, `.gitignore`, `scripts/install-skill-links.js`
+- Risk: Broken installation in fresh environments.
+- Priority: High
+
+**Manuscript content quality untested (High):**
+- What's not tested: Profane/placeholder content in manuscripts, citation completeness, LaTeX compilation health.
+- Files: `manuscripts/laser-ultrasound-denoising/main.tex:27`, `manuscripts/physics-constrained-multi-domain-denoising/references.bib`
+- Risk: Submission-ready documents may contain inappropriate content.
+- Priority: High
+
+**Documentation integrity untested (Medium):**
+- What's not tested: Whether docs config and referenced paths map to real repo assets.
+- Files: `mkdocs.yml`, `README.md`, `CLAUDE.md`
+- Risk: Broken onboarding and incorrect operational guidance.
+- Priority: Medium
 
 ---
 
-*Concerns audit: 2026-04-12*
+*Concerns audit: 2026-04-24*

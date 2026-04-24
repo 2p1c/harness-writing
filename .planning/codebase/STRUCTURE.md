@@ -1,199 +1,171 @@
 # Codebase Structure
 
-**Analysis Date:** 2026-04-12
+**Analysis Date:** 2026-04-24
 
 ## Directory Layout
 
 ```
 harness-writing/
-├── .agents/                    # Local skill source (symlink target for npm)
-├── .claude/                    # Claude Code configuration
-│   └── commands/              # Slash command definitions
-├── .github/                   # GitHub workflows and prompts
-├── .planning/                 # Planning documents (this directory)
-│   └── codebase/              # Codebase analysis docs
-├── docs/                      # Documentation assets
-├── manuscripts/               # Active paper projects
-├── scripts/                   # Build and utility scripts
-├── skills/                    # Published skills (npm install target)
-├── templates/                 # LaTeX templates
-│   └── elsevier/              # Elsevier journal template
-├── corpus/                    # Academic phrase collection (gitkeep)
-├── drafts/                    # Working drafts (gitkeep)
-├── figures/                   # Paper figures (gitkeep)
-├── .gitignore
-├── CLAUDE.md                  # AI assistant guidance
-├── Makefile                   # LaTeX compilation rules
-├── README.md                  # Project documentation
-├── mkdocs.yml                # Documentation site config
-├── opencode.json             # OpenCode plugin config
-└── package.json              # npm package manifest
+├── .agents/skills/          # Alternate/source skill tree with agents/references/scripts
+├── .claude/
+│   ├── commands/            # Slash-command route files (init, write, review, etc.)
+│   └── skills/              # Claude Code local skill definitions
+├── .github/prompts/         # Prompt assets for GitHub tooling
+├── .planning/               # GSDAW planning outputs and phase tracking
+│   ├── codebase/           # Codebase mapping documents (ARCHITECTURE, STRUCTURE, etc.)
+│   ├── phases/            # Phase plan artifacts
+│   ├── research-brief.json
+│   ├── literature.md
+│   ├── methodology.md
+│   ├── ROADMAP.md
+│   ├── STATE.md
+│   └── wave-plan.md
+├── corpus/                  # Reserved corpus storage (placeholder)
+├── docs/                    # MkDocs documentation site
+├── drafts/                  # Reserved draft storage (placeholder)
+├── figures/                 # Reserved figures storage (placeholder)
+├── manuscripts/             # Per-paper manuscript directories
+│   └── physics-constrained-multi-domain-denoising/
+│   └── laser-ultrasound-denoising/
+├── projects/                # Reserved project area (currently empty)
+├── scripts/                # Utility scripts (install, zotero context)
+├── skills/                  # GSDAW skill definitions (aw-orchestrator, aw-execute, etc.)
+├── templates/elsevier/       # Elsevier LaTeX template
+├── Makefile                 # LaTeX compilation targets
+├── CLAUDE.md                # GSDAW framework documentation
+├── README.md                # Project overview
+└── package.json             # npm package metadata
 ```
 
 ## Directory Purposes
 
-**.agents/ (Local Skills Source):**
-- Purpose: Original location for skills before npm packaging
-- Contains: Full skill directories with SKILL.md, agents/, references/, scripts/
-- Note: `skills/` is populated from this via npm install; `.agents` is the dev source
+**`.claude/commands/`:**
+- Purpose: Command routing files that map slash commands to skills
+- Contains: `init.md`, `write.md`, `review.md`, `cite.md`, `figure.md`, `preview.md`, `commit.md`, `plan.md`, `research.md`
+- Key files: `.claude/commands/init.md`, `.claude/commands/write.md`
 
-**.claude/commands/ (Command Definitions):**
-- Purpose: Map slash commands to skill invocations
-- Contains: `newpaper.md`, `outline.md`, `write.md`, `review.md`, `cite.md`, `figure.md`, `preview.md`, `branch.md`, `commit.md`, `skill-create.md`
-- Pattern: Each command file invokes a specific skill by name
+**`skills/`:**
+- Purpose: Main runtime skill catalog shipped with the package
+- GSDAW skills: `aw-orchestrator/`, `aw-execute/`, `aw-wave-planner/`, `aw-planner/`, `aw-questioner/`, `aw-research/`, `aw-methodology/`, `aw-review/`, `aw-cite/`, `aw-table/`, `aw-figure/`, `aw-abstract/`, `aw-finalize/`, `aw-resume/`, `aw-pause/`, `aw-translate/`
+- Section writers: `aw-write-intro/`, `aw-write-related/`, `aw-write-methodology/`, `aw-write-experiment/`, `aw-write-results/`, `aw-write-discussion/`, `aw-write-conclusion/`
+- Utilities: `latex-live-preview/`, `zotero-context-injector/`, `paper-branch-by-title/`, `find-skills/`, `git-commit/`
+- Superpowers: `superpowers/using-superpowers/`, `superpowers/test-driven-development/`, `superpowers/systematic-debugging/`, etc.
 
-**manuscripts/ (Paper Projects):**
-- Purpose: Working directory for active paper writing
-- Contains: Per-paper subdirectories with `project.yaml`, LaTeX files, references
-- Structure per paper:
-  ```
-  manuscripts/[paper-name]/
-  ├── project.yaml       # Metadata (title, authors, journal, section status)
-  ├── outline.md        # Generated IMRAD outline
-  ├── main.tex          # Main document (includes sections/)
-  ├── references.bib    # Bibliography
-  └── sections/
-      ├── abstract.tex
-      ├── introduction.tex
-      ├── methodology.tex
-      ├── results.tex
-      ├── discussion.tex
-      └── conclusion.tex
-  ```
+**`.agents/skills/`:**
+- Purpose: Expanded/parallel skill tree with agents/references/scripts subdirectories
+- Contains: `skill-creator/`, `git-commit/`, `git-flow-branch-creator/`, `brainstorming/`, `dispatching-parallel-agents/`, `executing-plans/`, etc.
 
-**scripts/ (Utility Scripts):**
-- Purpose: Build and installation scripts
-- Contains: `install-skill-links.js` (postinstall hook for symlinking)
+**`.planning/`:**
+- Purpose: Long-lived operational memory and generated planning artifacts
+- Planning docs: `PROJECT.md`, `ROADMAP.md`, `STATE.md`, `HANDOFF.json`
+- Generated: `research-brief.json`, `literature.md`, `methodology.md`, `wave-plan.md`
+- Phase tracking: `phases/`, `phase-*-design.md`
 
-**skills/ (Published Skills):**
-- Purpose: Packaged skills for npm distribution
-- Contains: 29 skills including:
-  - `academic-review/` - Dual-agent critique system
-  - `figure-integrator/` - PlantUML/Graphviz figure generation
-  - `latex-paper-en/` - Elsevier LaTeX section writing
-  - `latex-live-preview/` - Real-time PDF preview
-  - `literature-manager/` - Citation management
-  - `paper-outline-generator/` - IMRAD structure generation
-  - `research-paper-writer/` - End-to-end orchestration
-  - `zotero-context-injector/` - Zotero PDF import
-  - Plus git workflow skills, superpowers, and tool creation skills
-- Structure per skill:
-  ```
-  skills/[skill-name]/
-  ├── SKILL.md           # Main skill file (required)
-  ├── agents/            # Sub-agent prompts (optional)
-  ├── references/        # Reference documentation (optional)
-  └── scripts/           # Helper scripts (optional)
-  ```
+**`manuscripts/`:**
+- Purpose: Per-paper execution workspaces
+- Active papers: `physics-constrained-multi-domain-denoising/`, `laser-ultrasound-denoising/`
+- Each contains: `main.tex`, `references.bib`, `project.yaml`, `sections/` directory
 
-**templates/elsevier/ (LaTeX Template):**
-- Purpose: Elsevier journal article template
-- Contains:
-  - `main.tex` - Document class and structure
-  - `references.bib` - Sample bibliography
-  - `sections/` - Section templates (abstract, introduction, methodology, results, discussion, conclusion)
-- Usage: Copy to `manuscripts/[paper-name]/` to start new project
-
-**.github/ (GitHub Integration):**
-- Purpose: CI/CD workflows and custom prompts
-- Contains:
-  - `workflows/ci.yml` - GitHub Actions configuration
-  - `prompts/` - Custom prompt templates
+**`templates/elsevier/`:**
+- Purpose: Canonical starter layout for new manuscript projects
+- Contains: `main.tex`, `references.bib`, `sections/` (abstract.tex, introduction.tex, methodology.tex, results.tex, discussion.tex, conclusion.tex)
 
 ## Key File Locations
 
 **Entry Points:**
-- `.claude/commands/newpaper.md` - `/newpaper` command
-- `.claude/commands/outline.md` - `/outline` command
-- `.claude/commands/write.md` - `/write` command
-- `.claude/commands/review.md` - `/review` command
-- `.claude/commands/preview.md` - `/preview` command
+- `.claude/commands/init.md` — `/aw-init` orchestration entry
+- `skills/aw-orchestrator/SKILL.md` — Phase 1 initialization state machine
+- `skills/aw-execute/SKILL.md` — Wave-based execution and gate loop
 
 **Configuration:**
-- `package.json` - npm package manifest, scripts, dependencies
-- `Makefile` - LaTeX compilation targets
-- `mkdocs.yml` - Documentation site configuration
-- `opencode.json` - OpenCode plugin configuration
-- `.claude/settings.local.json` - Local Claude settings
+- `package.json` — npm package metadata, runtime constraints, postinstall script
+- `opencode.json` — OpenCode plugin declaration
+- `mkdocs.yml` — MkDocs documentation site config
+- `CLAUDE.md` — Repository operating guidance
 
-**Core Orchestration:**
-- `skills/research-paper-writer/SKILL.md` - Main workflow orchestrator
-- `skills/paper-outline-generator/SKILL.md` - IMRAD structure generator
-- `skills/latex-paper-en/SKILL.md` - Section writer with Elsevier format
-- `skills/academic-review/SKILL.md` - Dual-agent critique system
-
-**LaTeX Template:**
-- `templates/elsevier/main.tex` - Elsevier document template
-- `templates/elsevier/references.bib` - Sample BibTeX entries
-- `templates/elsevier/sections/*.tex` - Section templates
-
-**Project Metadata:**
-- `manuscripts/[paper-name]/project.yaml` - Paper metadata and section status
+**Manuscript Files:**
+```
+manuscripts/{slug}/
+├── main.tex                  # LaTeX entrypoint
+├── references.bib            # BibTeX bibliography
+├── project.yaml             # Paper metadata
+├── main.aux, main.bbl, etc. # LaTeX build artifacts
+├── main.pdf                  # Compiled output
+└── sections/
+    ├── abstract.tex          # Abstract (merged)
+    ├── introduction.tex      # Introduction (merged)
+    ├── intro/                # Paragraph files
+    │   ├── 1-1-background.tex
+    │   ├── 1-2-problem.tex
+    │   ├── 1-3-contributions.tex
+    │   └── 1-4-structure.tex
+    ├── related_work/
+    ├── methodology/
+    ├── experiment/
+    ├── results/
+    ├── discussion/
+    ├── conclusion/
+    └── tables/
+```
 
 ## Naming Conventions
 
 **Files:**
-- Skills: `SKILL.md` (uppercase)
-- Commands: `lower-case.md` (kebab-case)
-- LaTeX sections: `section-name.tex` (kebab-case)
-- Scripts: `kebab-case.ext` or `camelCase.ext`
-- YAML configs: `kebab-case.yaml` or `camelCase.json`
+- Skill contracts: `SKILL.md` (uppercase fixed name)
+- Command routes: lowercase kebab (e.g., `init.md`, `newpaper.md`)
+- Planning docs: uppercase semantic (e.g., `ROADMAP.md`, `STATE.md`)
+- Paragraph files: `{N}-{M}-{topic}.tex` (e.g., `3-4-physics-loss.tex`)
 
 **Directories:**
-- Skills: `kebab-case` (e.g., `latex-paper-en`, `academic-review`)
-- Papers: `kebab-case` derived from paper title
-- Commands: `lower-case` (e.g., `.claude/commands/`)
-
-**Git Branches (via git-flow-branch-creator):**
-- Pattern: `feature/paper-[slug]` or `feature/paper-[paper-title-kebab]`
+- Skill folders: kebab-case (e.g., `aw-write-methodology/`)
+- Manuscript folders: kebab-case slugs (e.g., `physics-constrained-multi-domain-denoising/`)
+- Template folders: descriptive lowercase (e.g., `elsevier/`)
 
 ## Where to Add New Code
 
-**New Skill:**
-1. Create in `.agents/skills/[skill-name]/` (local dev source)
-2. Include `SKILL.md` with frontmatter (name, description, triggers)
-3. Add `agents/`, `references/`, `scripts/` as needed
-4. Package and publish to npm for distribution
+**New Orchestration Skill:**
+- Implementation: `skills/aw-{new-skill}/SKILL.md`
+- Optional expanded tree: `.agents/skills/aw-{new-skill}/agents/`, `references/`, `scripts/`
+- Command route (if needed): `.claude/commands/{command}.md` with `Invoke skill` mapping
 
-**New Paper Project:**
-1. Create branch: `git flow feature start paper-[slug]`
-2. Copy template: `cp -r templates/elsevier manuscripts/[paper-name]`
-3. Create `project.yaml` with metadata
-4. Initialize `references.bib`
+**New Command Entry:**
+- Command file: `.claude/commands/{name}.md`
+- Must map to existing or new skill contract under `skills/`
 
-**New Command:**
-1. Create `.claude/commands/[name].md`
-2. Include frontmatter with description
-3. Add skill invocation directive
-4. Document trigger phrases
+**New Manuscript:**
+- Create `manuscripts/{paper-slug}/`
+- Start from template: `templates/elsevier/`
+- Populate `project.yaml`, `main.tex`, `references.bib`, section files under `sections/`
 
-**New LaTeX Section Template:**
-1. Add to `templates/elsevier/sections/[section].tex`
-2. Include section structure and placeholder content
-3. Document in `skills/latex-paper-en/references/elsevier-format.md`
+**New Paragraph:**
+- Location: `manuscripts/{slug}/sections/{chapter}/{wave}-{id}-{topic}.tex`
+- Follow `\paragraph{}` block structure
+
+**New Utility Script:**
+- Location: `scripts/{utility}.js` or `scripts/{utility}.py`
+- Wire via `package.json` scripts if needed
 
 ## Special Directories
 
-**manuscripts/ (Git-ignored working state):**
-- Purpose: Active paper projects
-- Generated: Yes (by `/newpaper` command)
-- Committed: Yes (via git, typically on paper-specific branch)
+**`.planning/codebase/`:**
+- Purpose: Mapper-generated architecture/stack/convention/concern references
+- Generated: Yes (by GSD codebase mapper)
+- Committed: Yes
 
-**skills/ (npm package content):**
-- Purpose: Published skill packages
-- Generated: Yes (via npm install from .agents)
-- Committed: No (derived from .agents, listed in .gitignore)
+**`manuscripts/{slug}/sections/{chapter}-zh/`:**
+- Purpose: Chinese translation versions of section paragraphs
+- Contains: Parallel `-zh.tex` files for each paragraph
+- Example: `sections/intro/`, `sections/intro-zh/`, `sections/methodology/`, `sections/methodology-zh/`
 
-**.agents/skills/ (Local skill source):**
-- Purpose: Development source for skills
-- Generated: No
-- Committed: Yes (source of truth for skills)
+**`templates/elsevier/`:**
+- Purpose: Reusable baseline for new manuscripts
+- Generated: No (authored template)
+- Committed: Yes
 
-**.planning/codebase/ (Analysis Output):**
-- Purpose: Architecture and structure documentation
-- Generated: Yes (by gsd-codebase-mapper)
-- Committed: Yes (for planner/executor consumption)
+**`projects/`:**
+- Purpose: Reserved future project workspace
+- Currently empty
 
 ---
 
-*Structure analysis: 2026-04-12*
+*Structure analysis: 2026-04-24*
