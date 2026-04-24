@@ -69,6 +69,9 @@ scripts/
 # Project-level skills (installed by npm postinstall from skills/)
 .claude/skills/
 
+# Local agent skills mirror
+.agents/
+
 # GSDAW local-only planning files (not pushed to remote)
 # === Ephemeral state (never push) ===
 .planning/STATE.md
