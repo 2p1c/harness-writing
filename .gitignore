@@ -54,7 +54,7 @@ Thumbs.db
 .vscode/
 .idea/
 
-# NPM package output (skills are distributed via npm, not git)
+# NPM package output
 *.tgz
 node_modules/
 
@@ -66,8 +66,20 @@ scripts/
 # Local settings (contains permissions/credentials)
 .claude/settings.local.json
 
+# Project-level skills (installed by npm postinstall from skills/)
+.claude/skills/
+
 # GSDAW local-only planning files (not pushed to remote)
+# === Ephemeral state (never push) ===
+.planning/STATE.md
+.planning/ROADMAP.md
+.planning/wave-plan.md
+.planning/HANDOFF.json
+.planning/PROJECT.md
+.planning/phase-*-design.md
+.planning/phases/
 .planning/research-brief.json
 .planning/literature.md
 .planning/methodology.md
 .planning/research-briefs/
+
