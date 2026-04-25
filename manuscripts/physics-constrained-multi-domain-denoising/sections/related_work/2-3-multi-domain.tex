@@ -1,0 +1,8 @@
+\subsection{Multi-Domain Signal Processing}
+\label{sec:multi-domain}
+
+Single-domain signal representations suffer from fundamental trade-offs: time-domain analysis preserves temporal ordering but ignores spectral content, while frequency-domain analysis reveals spectral components at the expense of temporal order \cite{yang2023unsupervised}. This limitation is particularly consequential for laser ultrasonic signals, where both arrival times and frequency content carry diagnostically relevant information.
+
+Multi-domain fusion addresses this by jointly extracting features from time, frequency, and time-frequency representations \cite{perry2026health}. Time-frequency transforms such as the short-time Fourier transform (STFT), continuous wavelet transform (CWT), and wavelet packet decomposition provide complementary perspectives: STFT offers uniform time-frequency resolution, while wavelets adapt their resolution to frequency \cite{chen2019wavelet}. Perry \textit{et al.} demonstrated that fusing time, frequency, and time-frequency domains improves health indicator extraction from guided waves in composite structures \cite{perry2026health}.
+
+Despite this demonstrated benefit, multi-domain fusion remains underexplored for laser ultrasonic denoising. Existing deep learning approaches predominantly operate in a single domain (time or frequency), failing to capture the complementary information available across representations. This gap motivates the multi-domain fusion strategy proposed in this work.

@@ -1,0 +1,4 @@
+\section{Results}
+\label{sec:results}
+
+This section presents a comprehensive evaluation of PMDF-Net on laser ultrasonic Lamb wave data, covering denoising performance on intact aluminum plate specimens, assessment on defect-containing specimens with machined slots and edge notches, cross-domain generalization from simulation to experiment, enhancement of defect detection due to improved signal quality, and an ablation study isolating the contribution of key architectural components and the physics loss. All experiments use the paired dataset described in Section~\ref{sec:methodology}, with evaluation metrics defined in Section~\ref{sec:baselines}. Results demonstrate substantial improvements in waveform fidelity and defect characterization compared to baseline methods.

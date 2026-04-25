@@ -1,0 +1,8 @@
+\subsection{Deep Learning for Ultrasonic Denoising}
+\label{sec:deep-learning}
+
+Deep convolutional neural networks have become a dominant approach to ultrasonic signal denoising. DnCNN \cite{zhang2017denoising} introduced residual learning wherein the network predicts the noise component rather than the clean signal, enabling training stability and strong denoising performance on natural images. The U-Net encoder-decoder architecture \cite{ronneberger2015unet} extended this with symmetric skip connections that preserve spatial detail, making it effective for pixel-level regression tasks such as signal denoising.
+
+Applications to ultrasonic NDT have demonstrated promise. Liu et al. \cite{liu2022deep} applied deep learning to laser ultrasonic defect detection, showing that CNN-based denoisers can suppress ambient noise while retaining diagnostic signal features. Zhang et al. \cite{zhang2020deep} reviewed deep learning methods across ultrasonic NDT and identified residual encoder-decoder structures as a consistent performer across diverse inspection scenarios.
+
+A critical limitation, however, shapes the research gap: existing deep learning models are predominantly trained on high-SNR averaged data \cite{liu2022deep, zhang2020deep}. When deployed under low-averaging conditions with substantially noisier inputs, these models exhibit a performance gap relative to their training benchmarks. Moreover, models trained on intact specimens face a cross-domain generalization challenge when applied to defect-containing specimens \cite{liu2022deep}, as the signal statistics shift between healthy and flawed structures. Addressing both the reduced-averaging condition and the intact-to-defect domain shift constitutes the primary motivation for the present work.

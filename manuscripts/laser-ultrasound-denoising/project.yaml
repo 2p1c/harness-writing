@@ -1,0 +1,34 @@
+project:
+  title: "Neural Network-Based Denoising of Laser Ultrasound Signals"
+  slug: laser-ultrasound-denoising
+  status: in_progress
+  created: 2026-04-09
+  target_journal: "Ultrasonics / NDT&E International"
+  research_domain: "Non-destructive Testing / Signal Processing"
+
+authors:
+  - name: "Your Name"
+    affiliation: "University / Institution"
+    email: "your.email@example.com"
+    corresponding: true
+
+sections:
+  abstract: pending
+  introduction: pending
+  methodology: pending
+  results: pending
+  discussion: pending
+  conclusion: pending
+
+keywords:
+  - laser Ultrasound
+  - signal denoising
+  - neural network
+  - deep learning
+  - NDT
+
+abstract_summary: |
+  This paper presents a neural network-based approach for removing noise from laser ultrasound signals
+  used in non-destructive testing applications. The proposed method achieves superior denoising
+  performance compared to conventional filtering techniques while preserving signal features
+  critical for defect detection.

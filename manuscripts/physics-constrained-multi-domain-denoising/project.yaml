@@ -1,0 +1,54 @@
+project: physics-constrained-multi-domain-denoising
+title: "A Multi-Domain Fusion Neural Network for Laser Ultrasonic Denoising as an Alternative to Signal Averaging with Generalization to Defect Detection"
+title_cn: "一种用于激光超声去噪的多域神经网络——作为信号平均的替代方案并可推广到缺陷检测"
+journal: Measurement (Elsevier)
+target_words: 8000
+figures_limit: 12
+status: planning
+created: 2026-04-22
+branch: paper/physics-constrained-multi-domain-denoising
+
+authors:
+  - name: Author One
+    affiliation: Department of Mechanical Engineering
+    email: authorone@university.edu
+    corresponding: true
+  - name: Author Two
+    affiliation: Department of Mechanical Engineering
+  - name: Author Three
+    affiliation: Department of Mechanical Engineering
+  - name: Author Four
+    affiliation: Department of Materials Science
+
+network:
+  name: PMDF-Net
+  full_name: Physics-constrained Multi-Domain Fusion Network
+  type: Encoder-decoder with dual-branch architecture
+  domains:
+    - Time domain
+    - Time-frequency domain
+
+training:
+  data_type: Paired
+  input: Limited averaging signals (N averages)
+  target: High averaging signals (M averages, M >> N)
+
+baselines:
+  - Signal averaging (N vs M averages)
+  - Wiener filter
+  - BM3D
+  - Wavelet denoising (DWT)
+  - Single-domain CNN
+
+evaluation:
+  metrics:
+    - SNR improvement (dB)
+    - Feature preservation (arrival time, amplitude, waveform correlation)
+    - Defect detection enhancement (F1-score, POD curves)
+    - Efficiency comparison
+
+key_innovations:
+  - Multi-domain fusion (time + time-frequency)
+  - Physics-constrained feature preservation
+  - Reduced averaging training protocol
+  - Cross-domain generalization (intact to defect)

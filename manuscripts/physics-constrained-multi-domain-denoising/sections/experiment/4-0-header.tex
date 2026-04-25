@@ -1,0 +1,4 @@
+\section{Experimental Validation}
+\label{sec:experiments}
+
+This section describes the experimental validation of PMDF-Net on laser ultrasonic defect imaging. The validation proceeds in three stages. Section~\ref{sec:experiment-setup} details the laser ultrasonic testing system, including the Nd:YAG generation laser, LDV detection, scanning configuration, and the aluminum specimens used for training and testing. Section~\ref{sec:experiment-training} presents the signal preprocessing pipeline, the construction of paired training data with a 12\,dB SNR target, data augmentation protocols, and the PMDF-Net training configuration on a single RTX 4090. Section~\ref{sec:experiment-imaging} evaluates full waveform imaging performance through B-scan reconstruction over machined defects, comparing PMDF-Net against Wiener filtering, BM3D, and DWT using SNR improvement, NMSE, feature preservation, and CNR metrics.

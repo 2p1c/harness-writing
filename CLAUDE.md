@@ -8,9 +8,10 @@ GSDAW (Get Shit Done Academic Writing) — Spec-driven academic paper writing fr
 |------|----------|
 | Active paper | `manuscripts/{slug}/` |
 | Paper template | `templates/elsevier/` |
-| GSDAW skills | `skills/aw-*/` |
-| Phase designs | `.planning/phase-*-design.md` |
-| Planning docs | `.planning/*.md` |
+| GSDAW pipeline skills | `skills/aw-*/` |
+| Framework design docs | `planning/` |
+| Paper planning docs | `manuscripts/{slug}/.planning/` (symlinked to `.planning/`) |
+| Utility agents | `.agents/skills/` |
 
 ## GSDAW Pipeline (3 Phases)
 
@@ -37,6 +38,17 @@ GSDAW (Get Shit Done Academic Writing) — Spec-driven academic paper writing fr
 | `/aw-finalize` | Phase 3 | make paper, check refs, word count, update STATE |
 | `/aw-review` | Any | Section quality review (continue / modify / pause) |
 | `/aw-wave-planner` | Manual | Re-plan waves from ROADMAP |
+
+## Skills Organization
+
+Skills are stored in two directories by purpose:
+
+| Directory | Contents | Purpose |
+|-----------|----------|---------|
+| `skills/aw-*/` | GSDAW pipeline skills | Core writing pipeline: orchestrator, executors, writers |
+| `.agents/skills/` | Utility agents | Zotero, git helpers, paper branching, checkpointing |
+
+The install script (`scripts/install-skill-links.js`) creates symlinks from `skills/` into `~/.agents/skills/` and `~/.claude/skills/` for global discovery. Run `npm install` or `node scripts/install-skill-links.js` to activate skills.
 
 ## Paragraph File Structure
 
@@ -81,15 +93,22 @@ manuscripts/{slug}/
 ## Planning Outputs
 
 ```
-.planning/
-├── research-brief.json    ← /aw-init output
-├── literature.md          ← Research Agent output
-├── methodology.md         ← Methodology Agent output
-├── ROADMAP.md            ← Phase-by-phase tasks + success criteria
-├── STATE.md              ← Current phase, completion %
-├── wave-plan.md          ← Wave assignments (auto-generated)
-└── phase-*-design.md    ← GSDAW framework design docs
+planning/                        ← Framework design docs
+├── PROJECT.md                   ← Framework project spec
+├── phase-*-design.md            ← GSDAW phase designs
+├── codebase/                    ← Codebase mapping (ARCHITECTURE, STRUCTURE, STACK, etc.)
+└── phases/                      ← Framework development checkpoints
+
+manuscripts/{slug}/.planning/    ← Paper-specific planning (symlinked to .planning/)
+├── research-brief.json          ← /aw-init output
+├── literature.md                ← Research Agent output
+├── methodology.md               ← Methodology Agent output
+├── ROADMAP.md                   ← Phase-by-phase tasks + success criteria
+├── STATE.md                     ← Current phase, completion %
+└── wave-plan.md                 ← Wave assignments (auto-generated)
 ```
+
+Note: Root `.planning/` is a symlink to `manuscripts/{active-paper}/.planning/`. All skills reference `.planning/` paths which resolve through the symlink transparently. To switch to a different paper, update the symlink.
 
 ## Writing Order
 

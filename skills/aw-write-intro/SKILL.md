@@ -9,6 +9,27 @@ description: Write introduction section paragraphs for academic papers using wav
 
 Write introduction section paragraphs as independent wave tasks. Each invocation writes one paragraph file following the ROADMAP task decomposition. Paragraphs are written in parallel when assigned to the same wave (no file overlap), and sequentially when dependencies require it.
 
+## ⚠️ Factual Integrity (Highest Priority)
+
+All examples in this skill are FORMAT TEMPLATES only. Follow these rules:
+
+### Rule 1: Write Only from Input Files
+- If `.planning/literature.md`, `.planning/research-brief.json`, or `.planning/methodology.md` does **not** contain a specific fact, number, or claim — **do not invent it**
+- Mark missing content with `\placeholder{NEEDS: description of what is missing}`
+- Less content is better than fabricated content
+
+### Rule 2: Examples Are Format Templates — Never Copy Numbers
+- Every `% INPUT REQUIRED` marker below must be filled from actual input data
+- **Never copy example values, citations, or claims into the output**
+
+### Rule 3: When Uncertain, Hedge
+- "suggests" / "indicates" / "appears" — not "proves" / "demonstrates conclusively"
+- "one possible explanation is" / "this pattern may indicate"
+- "further investigation is needed to determine"
+
+### Rule 4: Self-Check Before Finalizing
+Ask: Is every claim in this paragraph directly supported by an input file? If not, remove it or mark as `\placeholder{}`.
+
 ## When to Trigger
 
 - `/aw-execute` assigns a wave task with `section: introduction`
@@ -44,12 +65,13 @@ Each file contains exactly one `\paragraph{}` block with appropriate content.
 
 **LaTeX structure:**
 ```latex
- paragraph{Reviewing Past Work}
-\label{sec:intro:background}
+% INPUT REQUIRED: Title from task context
+ paragraph{INPUT REQUIRED: Section title}
+% INPUT REQUIRED: Label following convention sec:intro:{task-id}
+\label{INPUT REQUIRED: e.g., sec:intro:background}
 
-[2-3 paragraphs tracing the evolution of the field,
- citing key prior work, narrowing down to the specific
- sub-area the paper addresses]
+% INPUT REQUIRED: 2-3 paragraphs from literature.md + research-brief.json
+% Use \cite{key} from literature.md. Do not invent citations.
 ```
 
 **Coverage:**
@@ -66,13 +88,12 @@ Each file contains exactly one `\paragraph{}` block with appropriate content.
 
 **LaTeX structure:**
 ```latex
- paragraph{Problem Statement}
-\label{sec:intro:problem}
+% INPUT REQUIRED: Problem statement
+ paragraph{INPUT REQUIRED: Problem title}
+\label{INPUT REQUIRED: e.g., sec:intro:problem}
 
-[1 paragraph clearly stating the specific problem,
- limitation, or gap that motivates the paper.
- Avoid vague language; be precise about what is missing
- or suboptimal in existing work.]
+% INPUT REQUIRED: 1 paragraph from research-brief.json gap description
+% Be precise. If no gap is documented, write \placeholder{NEEDS: gap}.
 ```
 
 **Coverage:**
@@ -88,13 +109,16 @@ Each file contains exactly one `\paragraph{}` block with appropriate content.
 
 **LaTeX structure:**
 ```latex
- paragraph{Main Contributions}
-\label{sec:intro:contributions}
+% INPUT REQUIRED: Contributions from research-brief.json novelty claims
+ paragraph{INPUT REQUIRED: Contributions title}
+\label{INPUT REQUIRED: e.g., sec:intro:contributions}
 
 \begin{itemize}
-    \item We propose \ldots
-    \item We demonstrate \ldots
-    \item We provide \ldots
+    % INPUT REQUIRED: Each \item from research-brief.json contribution bullet
+    % If no contributions are documented, write \placeholder{NEEDS: contributions}
+    \item INPUT REQUIRED: First contribution with \cite{key}
+    \item INPUT REQUIRED: Second contribution
+    \item INPUT REQUIRED: Third contribution
 \end{itemize}
 ```
 
@@ -112,14 +136,17 @@ Each file contains exactly one `\paragraph{}` block with appropriate content.
 
 **LaTeX structure:**
 ```latex
- paragraph{Paper Organization}
-\label{sec:intro:structure}
+% INPUT REQUIRED: Section ordering from ROADMAP.md
+ paragraph{INPUT REQUIRED: Structure title}
+\label{INPUT REQUIRED: e.g., sec:intro:structure}
 
+% INPUT REQUIRED: List sections from ROADMAP.md in IMRAD order
 The remainder of this paper is organized as follows.
-Section~\ref{sec:methodology} describes \ldots
-Section~\ref{sec:results} presents \ldots
-Section~\ref{sec:discussion} discusses \ldots
-Section~\ref{sec:conclusion} concludes \ldots
+Section~\ref{INPUT REQUIRED: methodology label} describes INPUT REQUIRED.
+Section~\ref{INPUT REQUIRED: results label} presents INPUT REQUIRED.
+Section~\ref{INPUT REQUIRED: discussion label} discusses INPUT REQUIRED.
+Section~\ref{INPUT REQUIRED: conclusion label} concludes INPUT REQUIRED.
+% If any section is not yet planned, write \placeholder{NEEDS: section info}
 ```
 
 **Coverage:**
@@ -131,15 +158,18 @@ Section~\ref{sec:conclusion} concludes \ldots
 
 ### Paragraph Block Structure
 ```latex
- paragraph{Title}
-\label{sec:intro:task-id}
+% INPUT REQUIRED: Title and label matching the task
+ paragraph{INPUT REQUIRED: Section title}
+\label{INPUT REQUIRED: Use convention sec:intro:task-id}
 
-Content here...
+% INPUT REQUIRED: Content extracted from input files
+% Use \cite{key} for every factual claim.
+% If content is missing, write \placeholder{NEEDS: description}.
 
 % For contributions, use itemize inside the paragraph block:
 \begin{itemize}
-    \item First contribution...
-    \item Second contribution...
+    \item INPUT REQUIRED: First contribution with \cite{key}
+    \item INPUT REQUIRED: Second contribution
 \end{itemize}
 ```
 
@@ -168,16 +198,19 @@ From `templates/elsevier/main.tex`:
 
 ### Do
 - Use precise, specific language
-- Quantify claims when data is available
+- Quantify claims only when data is available in input files; otherwise use `\placeholder{}`
 - Use hedging appropriately: "suggests", "indicates", "appears"
 - Cite foundational and recent relevant work
 - Match academic register (formal, objective tone)
+- Cross-check each claim against input files before writing
 
 ### Do Not
+- Invent numbers, methods, results, or citations not present in input files
 - Use vague quantifiers ("significant", "many", "various") without context
 - Make claims without citation support
+- Copy example text from this skill into the output
 - Use first-person if journal prefers passive voice (check research-brief.json)
-- Include TODO or FIXME placeholders
+- Include TODO or FIXME placeholders (use `\placeholder{}` instead)
 - Write in bullet format for background/problem/structure (only contributions may use itemize)
 
 ## Task Execution Workflow
@@ -189,30 +222,33 @@ From `templates/elsevier/main.tex`:
 5. **Write .tex file** with correct `\paragraph{}` block and label
 6. **Verify** file compiles standalone (can be \input{} into main document)
 
-## File Output Example
+## File Output Template
 
-**File:** `manuscripts/my-paper/sections/intro/1-1-background.tex`
+Use this template structure. **Replace every `% INPUT REQUIRED` comment with actual content from input files. Do not invent content.**
 
 ```latex
- paragraph{Reviewing Past Work}
-\label{sec:intro:background}
+% ============================================
+% INPUT REQUIRED: Write ONE \paragraph{} block
+% Fill from: literature.md + research-brief.json
+% Do NOT copy example content — extract from inputs
+% ============================================
+ paragraph{INPUT REQUIRED: Section title based on task}
+\label{INPUT REQUIRED: Use convention sec:intro:{task-id}}
 
-Deep learning has transformed computer vision over the past decade, with
-convolutional neural networks achieving human-level performance on benchmark
-datasets \cite{lecun2015deep,krizhevsky2012imagenet}. Recent advances in
-transformer architectures have further improved results on complex visual
-understanding tasks \cite{dosovitskiy2021image,vit2020}. However, despite
-these improvements, existing approaches face challenges when applied to
-low-resolution medical imaging data \cite{smith2021limitations}. In the
-domain of remote sensing, similar limitations have been observed, where
-computational costs grow prohibitive for large-scale deployment \cite{chen2022remote}.
-
-The field of low-light image enhancement has seen particular interest,
-with traditional histogram equalization methods \cite{pizer1987adaptive}
-gradually replaced by learning-based approaches \cite{lorenz2021learning}.
-Despite these advances, real-time enhancement for video streams remains
-computationally challenging \cite{wang2023real}, motivating the need for
-more efficient architectures suitable for edge deployment.
+% INPUT REQUIRED: Content paragraph(s) based on task:
+% - Task 1-1 (Background): 2-3 paragraphs tracing field evolution,
+%   citing key prior work from literature.md, narrowing to the
+%   specific sub-area. Use \cite{key} for every factual claim.
+% - Task 1-2 (Problem): 1 paragraph stating the precise gap or
+%   limitation from research-brief.json. Avoid vague language.
+% - Task 1-3 (Contributions): 3-4 \item bullets from
+%   research-brief.json novelty claims. Start with "We propose..."
+% - Task 1-4 (Structure): 5-7 sentences outlining IMRAD sections
+%   with \ref{} labels. No citations.
+%
+% If input files lack required information for a claim:
+%   → Mark with \placeholder{NEEDS: description}
+%   → Or skip the claim entirely
 ```
 
 ## Integration

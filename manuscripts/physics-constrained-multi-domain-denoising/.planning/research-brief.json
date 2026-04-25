@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "title": "A Multi-Domain Fusion Neural Network for Laser Ultrasonic Denoising as an Alternative to Signal Averaging with Generalization to Defect Detection",
+  "title_cn": "一种用于激光超声去噪的多域神经网络——作为信号平均的替代方案并可推广到缺陷检测",
+  "created": "2026-04-22",
+  "lastUpdated": "2026-04-22",
+  "researchQuestion": {
+    "problem": "激光超声技术虽提供非接触式结构检测方案，但实际应用受制于低信噪比、信号不一致性及对重复平均的依赖——后者可能导致材料表面损伤并降低检测效率。",
+    "novelty": "（1）多域融合：时域+时频域联合表示；（2）物理约束：保留声学特征的降噪；（3）减少平均次数的同时保持缺陷检测能力；（4）单点信号处理，无需空间插值。",
+    "existingGaps": "传统方法（ Wiener、BM3D、小波降噪）在降噪的同时往往破坏声学特征；深度学习方法通常需要大量平均数据训练，泛化性不足；少有方法在减少平均次数条件下同时保证降噪质量和缺陷特征保留。",
+    "impact": "为无损检测提供高效、实用的激光超声信号增强方案，减少检测对反复平均的依赖，提高检测效率并避免激光表面损伤。"
+  },
+  "researchApproach": {
+    "strategy": "提出 Physics-constrained Multi-Domain Fusion Network，采用编码器-解码器架构融合时域和时频域表示。使用成对数据集训练：输入为有限平均信号，参考目标为高平均信号，学习低质量→高质量映射。",
+    "assumptions": [
+      "声学特征（如波达时间、振幅、波形形态）可在降噪后保留",
+      "在完整铝板上训练的模型可泛化到含缺陷试样",
+      "激光超声噪声可建模为加性噪声且网络可学习其分布"
+    ],
+    "comparisonToAlternatives": "相比传统信号平均：避免表面损伤，提高效率；相比现有深度学习方法：多域融合更好保留特征，减少平均依赖；相比单域深度学习：时频联合表示捕获更丰富信息。"
+  },
+  "methodology": {
+    "dataAndExperiments": "成对数据集采集自完整铝板：输入信号采用有限平均（N次），参考目标采用高平均（>=M次， M>>N）。训练后模型在含缺陷试样上进行泛化测试。",
+    "evaluationMetrics": [
+      "SNR 改善量（dB）",
+      "声学特征保留度（波达时间、振幅、波形相关性）",
+      "缺陷检测增强效果（缺陷可见性、F1-score、POD曲线）",
+      "与信号平均方法的效率对比"
+    ],
+    "baselines": [
+      "传统信号平均（N次 vs M次，M>>N）",
+      "Wiener滤波",
+      "BM3D",
+      "小波降噪（DWT）",
+      "现有深度学习单域降噪方法"
+    ],
+    "existingAssets": [
+      "网络结构设计详见飞书文档（待提取）：MsAtwXP92iRSVFkdxqBcXGWfnGf",
+      "成对激光超声数据集（完整铝板 + 含缺陷试样）"
+    ],
+    "estimatedTimeline": "实验周期中等，优先完成各章节大纲和初稿"
+  },
+  "constraints": {
+    "targetVenue": "Measurement (Elsevier)",
+    "formatRequirements": "Elsevier article, numbered references, \cite{} format",
+    "deadline": null,
+    "wordPageLimit": "约8000词（主文），12图/表",
+    "specialRequirements": "无特殊要求，优先速度"
+  },
+  "materials": {
+    "drafts": false,
+    "data": true,
+    "figures": false,
+    "code": false,
+    "keyReferences": [
+      "激光超声深度学习去噪相关文献（待补充）",
+      "多域融合网络相关文献（待补充）",
+      "物理约束神经网络相关文献（待补充）"
+    ]
+  },
+  "notes": {
+    "redLines": [
+      "不要太花哨的语言，初稿优先完成结构和内容"
+    ],
+    "stylePreferences": "Measurement 期刊风格，简洁直接"
+  },
+  "networkArchitecture": {
+    "reference": "飞书文档 https://jcnqxvnfi5o2.feishu.cn/wiki/MsAtwXP92iRSVFkdxqBcXGWfnGf",
+    "type": "Physics-constrained Multi-Domain Fusion Network (编码器-解码器)",
+    "domains": ["时域", "时频域"],
+    "note": "具体结构参数待从飞书文档提取"
+  },
+  "status": "complete"
+}

@@ -26,6 +26,27 @@ Before starting, verify:
 2. Experimental data or notes exist (either in `.planning/experimental-data/` or referenced in methodology.md)
 3. `sections/results/` directory exists in the manuscript project
 
+## ⚠️ Factual Integrity (Highest Priority)
+
+All examples in this skill are FORMAT TEMPLATES only. Follow these rules:
+
+### Rule 1: Write Only from Input Files
+- If `.planning/methodology.md`, `.planning/research-brief.json`, or experimental data files do **not** contain a specific fact, number, or claim — **do not invent it**
+- Mark missing content with `\placeholder{NEEDS: description of what is missing}`
+- Less content is better than fabricated content
+
+### Rule 2: Examples Are Format Templates — Never Copy Numbers
+- Every `% INPUT REQUIRED` marker below must be filled from actual input data
+- **Never copy example values, citations, or claims into the output**
+
+### Rule 3: When Uncertain, Hedge
+- "suggests" / "indicates" / "appears" — not "proves" / "demonstrates conclusively"
+- "one possible explanation is" / "this pattern may indicate"
+- "further investigation is needed to determine"
+
+### Rule 4: Self-Check Before Finalizing
+Ask: Is every claim in this paragraph directly supported by an input file? If not, remove it or mark as `\placeholder{}`.
+
 ## Workflow
 
 ```
@@ -78,38 +99,16 @@ Read `.planning/methodology.md` and extract:
 
 ### Expected Methodology Structure
 
+Your methodology.md may contain sections like datasets, baselines, evaluation metrics, and ablation studies. Extract content from the actual file. Do not assume any section exists.
+
 ```markdown
-## Experiment Design
-
-### Datasets
-
-| Dataset | Size | Split | Justification |
-|---------|------|-------|---------------|
-| Simulated | 10K samples | 80/10/10 | ... |
-| Aluminum | 5K samples | 70/15/15 | ... |
-| CFRP | 8K samples | 80/10/10 | ... |
-
-### Baselines
-
-| Baseline | Source | Justification |
-|----------|--------|---------------|
-| MethodX | [paper] | Standard baseline for this task |
-| MethodY | [paper] | Most similar approach |
-
-### Evaluation Metrics
-
-| Metric | Definition | Why Selected |
-|--------|------------|--------------|
-| SNR Improvement | ... | Primary metric |
-| Detection Rate | ... | Task-specific |
-| Accuracy | ... | Standard classification metric |
-
-### Ablation Studies
-
-| Ablation | Expected Impact | Rationale |
-|----------|-----------------|------------|
-| Remove Component A | ~3-5% drop | Provides X |
-| Replace attention | ~2% drop | Adds overhead but captures Y |
+% INPUT REQUIRED: Fill from actual methodology.md structure
+% Common sections to look for:
+% - Datasets (table with size, split, justification)
+% - Baselines (method name, source, justification)
+% - Evaluation Metrics (metric name, definition, reason)
+% - Ablation Studies (variant, expected impact, rationale)
+% If any section is missing, skip it or mark \placeholder{NEEDS: [section name]}
 ```
 
 ---
@@ -125,28 +124,14 @@ Check for experimental data in the following locations (in priority order):
 
 ### Experimental Data Format (if YAML/JSON)
 
+Experimental data structure varies by paper. Read the actual data file and use the keys/values it contains. **Do not invent experimental results.**
+
 ```yaml
-# .planning/experimental-data/results.yaml
-simulated:
-  snr_improvement: 12.4
-  detection_rate: 94.2
-  baseline_snr: [8.1, 9.3, 10.2]  # MethodX, MethodY, MethodZ
-aluminum:
-  snr_improvement: 9.8
-  detection_rate: 91.5
-  baseline_snr: [6.2, 7.1, 8.5]
-cfrp:
-  snr_improvement: 11.1
-  detection_rate: 93.0
-  baseline_snr: [7.5, 8.0, 9.1]
-generalization:
-  cross_domain_accuracy: 87.3
-  seen_domain_accuracy: 95.1
-ablation:
-  full_model: 94.2
-  without_component_a: 89.8
-  without_attention: 91.5
-  without_both: 85.3
+# Expected format: .planning/experimental-data/results.yaml or results.json
+# Structure depends on the specific paper's datasets and metrics
+# Example (replace with actual keys from data file):
+# % INPUT REQUIRED: per-dataset results from experimental data
+# % INPUT REQUIRED: per-ablation results from experimental data
 ```
 
 ### Data Not Available
@@ -185,221 +170,180 @@ sections/results/
 
 ### File: 5-1-simulated.tex
 
+**Do not invent results.** Fill tables and values from experimental data only.
+
 ```latex
 \section{Results on Simulated Dataset}
 \label{sec:results-simulated}
 
-paragraph{5.1 Simulated Dataset Results}
+ paragraph{5.1 Simulated Dataset Results}
 
-We first evaluate the proposed method on the simulated dataset, which provides
-a controlled environment for assessing performance under known signal conditions.
-Table~\ref{tab:simulated-results} summarizes the Signal-to-Noise Ratio (SNR)
-improvement and detection accuracy compared with baseline methods.
+% INPUT REQUIRED: Opening context paragraph describing the simulated dataset and its purpose
+% From: methodology.md experiment design section
 
+% INPUT REQUIRED: Results table from experimental data
+% Use booktabs format. Bold the best result in each column.
 \begin{table}[htbp]
-    \caption{SNR Improvement and Detection Accuracy on Simulated Dataset}
+    \caption{INPUT REQUIRED: Table caption}
     \label{tab:simulated-results}
     \begin{tabular}{lcc}
         \toprule
-        Method & SNR Improvement (dB) & Detection Accuracy (\%) \\
+        % INPUT REQUIRED: Column headers from experimental data
         \midrule
-        MethodX \citeauthor{methodx2022} & 8.1 & 82.3 \\
-        MethodY \citeauthor{methody2023} & 9.3 & 85.7 \\
-        MethodZ \citeauthor{methodz2021} & 10.2 & 88.1 \\
+        % INPUT REQUIRED: Each baseline method row with results
         \midrule
-        Proposed & \textbf{12.4} & \textbf{94.2} \\
+        % INPUT REQUIRED: Proposed method row with results
         \bottomrule
     \end{tabular}
 \end{table}
 
-The proposed method achieves an SNR improvement of \textbf{12.4 dB}, representing
-a \textbf{21.6\%} improvement over the best baseline (MethodZ, 10.2 dB).
-This improvement is statistically significant (p $<$ 0.01, Wilcoxon signed-rank test).
-The detection accuracy of \textbf{94.2\%} exceeds all baselines by at least 6.1
-percentage points, confirming the effectiveness of the proposed approach under
-controlled conditions where ground truth is precisely known.
+% INPUT REQUIRED: 1-2 paragraphs interpreting the simulated results
+% Report actual numbers from experimental data; use \cite{} for baseline citations
+% If no experimental data exists, write \placeholder{NEEDS: simulated dataset results}
 ```
 
 **Key elements:**
-- SNR improvement table with booktabs
-- Bold best result
-- Statistical significance note (p < 0.01)
-- Comparison with best baseline (21.6\% improvement)
+- Results table with booktabs
+- Bold the best result in each column
 - Short interpretation paragraph
+- All numbers from experimental data only
 
 ---
 
 ### File: 5-2-aluminum.tex
 
 ```latex
-paragraph{5.2 Aluminum Dataset Results}
+ paragraph{5.2 Aluminum Dataset Results}
 
-We next present results on the aluminum dataset, which represents a
-real-world industrial inspection scenario with moderate complexity.
-Table~\ref{tab:aluminum-results} presents the comparison with baseline methods.
+% INPUT REQUIRED: Context paragraph about the aluminum dataset
+% From: methodology.md experiment design section
 
+% INPUT REQUIRED: Results table from experimental data
 \begin{table}[htbp]
-    \caption{SNR Improvement and Detection Accuracy on Aluminum Dataset}
+    \caption{INPUT REQUIRED: Table caption}
     \label{tab:aluminum-results}
     \begin{tabular}{lcc}
         \toprule
-        Method & SNR Improvement (dB) & Detection Accuracy (\%) \\
+        Method & INPUT REQUIRED: Column headers \\
         \midrule
-        MethodX \citeauthor{methodx2022} & 6.2 & 78.4 \\
-        MethodY \citeauthor{methody2023} & 7.1 & 81.2 \\
-        MethodZ \citeauthor{methodz2021} & 8.5 & 84.9 \\
+        % INPUT REQUIRED: Each baseline method row with results
         \midrule
-        Proposed & \textbf{9.8} & \textbf{91.5} \\
+        % INPUT REQUIRED: Proposed method row with results
         \bottomrule
     \end{tabular}
 \end{table}
 
-On the aluminum dataset, the proposed method achieves an SNR improvement of
-\textbf{9.8 dB}, a \textbf{15.3\%} improvement over the best baseline.
-The detection accuracy reaches \textbf{91.5\%}, surpassing MethodZ by 6.6
-percentage points. The relatively lower absolute performance compared to the
-simulated dataset reflects the increased noise complexity in real industrial
-environments, where material heterogeneity and surface irregularities introduce
-additional challenges not present in synthetic data.
+% INPUT REQUIRED: 1-2 paragraphs interpreting aluminum results
+% If no experimental data exists, write \placeholder{NEEDS: aluminum dataset results}
 ```
 
 **Key elements:**
 - Same table structure as simulated
-- Cross-dataset comparison note
-- Interpretation of lower absolute performance (industrial complexity)
+- Cross-dataset comparison if data available
+- Interpretation specific to material characteristics
 
 ---
 
 ### File: 5-3-cfrp.tex
 
 ```latex
-paragraph{5.3 CFRP Dataset Results}
+ paragraph{5.3 CFRP Dataset Results}
 
-The carbon fiber reinforced polymer (CFRP) dataset presents the most challenging
-scenario due to the anisotropic nature of carbon fiber materials and the complex
-interference patterns they produce. Results are summarized in Table~\ref{tab:cfrp-results}.
+% INPUT REQUIRED: Context paragraph about the CFRP dataset and its challenges
+% From: methodology.md experiment design section
 
+% INPUT REQUIRED: Results table from experimental data
 \begin{table}[htbp]
-    \caption{SNR Improvement and Detection Accuracy on CFRP Dataset}
+    \caption{INPUT REQUIRED: Table caption}
     \label{tab:cfrp-results}
     \begin{tabular}{lcc}
         \toprule
-        Method & SNR Improvement (dB) & Detection Accuracy (\%) \\
+        Method & INPUT REQUIRED: Column headers \\
         \midrule
-        MethodX \citeauthor{methodx2022} & 7.5 & 80.1 \\
-        MethodY \citeauthor{methody2023} & 8.0 & 82.6 \\
-        MethodZ \citeauthor{methodz2021} & 9.1 & 86.4 \\
+        % INPUT REQUIRED: Each baseline method row with results
         \midrule
-        Proposed & \textbf{11.1} & \textbf{93.0} \\
+        % INPUT REQUIRED: Proposed method row with results
         \bottomrule
     \end{tabular}
 \end{table}
 
-The proposed method achieves \textbf{11.1 dB} SNR improvement on CFRP,
-representing a \textbf{22.0\%} gain over the best baseline. Detection accuracy
-of \textbf{93.0\%} exceeds all baselines by at least 6.6 percentage points.
-Notably, the improvement margin is larger on CFRP than on aluminum (+22.0\%
-vs. +15.3\% over best baseline), suggesting that the proposed method's
-architecture is particularly effective at handling the complex interference
-patterns characteristic of anisotropic composite materials.
+% INPUT REQUIRED: 1-2 paragraphs interpreting CFRP results
+% If no experimental data exists, write \placeholder{NEEDS: CFRP dataset results}
 ```
 
 **Key elements:**
-- Consistent table structure
-- Highlights larger improvement margin on challenging dataset
+- Consistent table structure across datasets
 - Material-specific interpretation
+- Cross-material comparison where data available
 
 ---
 
 ### File: 5-4-generalization.tex
 
 ```latex
-paragraph{5.4 Cross-Domain Generalization}
+ paragraph{5.4 Cross-Domain Generalization}
 
-To evaluate the model's ability to generalize to unseen material configurations,
-we conduct cross-domain experiments where the model is trained on one material
-and evaluated on another. Table~\ref{tab:generalization} reports cross-domain
-detection accuracy alongside within-domain (seen) accuracy.
+% INPUT REQUIRED: Context paragraph describing the generalization evaluation
+% From: experimental data (cross-domain results)
 
+% INPUT REQUIRED: Cross-domain results table from experimental data
 \begin{table}[htbp]
-    \caption{Cross-Domain Generalization Results}
+    \caption{INPUT REQUIRED: Table caption}
     \label{tab:generalization}
     \begin{tabular}{lcc}
         \toprule
-        Training Domain & Test Domain & Detection Accuracy (\%) \\
+        Training Domain & Test Domain & INPUT REQUIRED: Metric column \\
         \midrule
-        Simulated & Aluminum & 83.7 \\
-        Simulated & CFRP & 81.2 \\
-        Aluminum & Simulated & 86.4 \\
-        Aluminum & CFRP & 84.9 \\
-        CFRP & Simulated & 85.1 \\
-        CFRP & Aluminum & 87.3 \\
+        % INPUT REQUIRED: Each cross-domain pair row
         \midrule
-        \midrule
-        \emph{Seen Domains} & \emph{Matched Domain} & \emph{95.1} \\
+        % INPUT REQUIRED: Within-domain (seen) baseline row
         \bottomrule
     \end{tabular}
 \end{table}
 
-The cross-domain experiments reveal that the model exhibits meaningful transfer
-between structurally similar materials. The best cross-domain performance
-(87.3\% CFRP $\rightarrow$ Aluminum) approaches the seen-domain accuracy (95.1\%),
-indicating that representations learned from CFRP data transfer effectively to
-aluminum inspection. However, transfer from simulated to real data is weaker
-(83.7\% and 81.2\%), highlighting the domain gap between synthetic and physical
-measurements. These results suggest that fine-tuning on target-domain data
-may be beneficial for deployment scenarios with limited labeled data.
+% INPUT REQUIRED: 1-2 paragraphs analyzing generalization patterns
+% If no cross-domain data exists, write \placeholder{NEEDS: cross-domain results}
 ```
 
 **Key elements:**
 - Cross-domain table with training/test domain pairs
 - Within-domain baseline for comparison
-- Analysis of transfer direction
-- Practical recommendation for deployment
+- Analysis of transfer direction with actual data
 
 ---
 
 ### File: 5-5-detection.tex
 
 ```latex
-paragraph{5.5 Detection Performance Analysis}
+ paragraph{5.5 Detection Performance Analysis}
 
-Beyond SNR improvement, we analyze detection performance using precision-recall
-metrics and receiver operating characteristic (ROC) curves. Table~\ref{tab:detection}
-presents per-dataset detection metrics, while Figure~\ref{fig:roc} shows the
-ROC curves for all methods.
+% INPUT REQUIRED: Context paragraph about detection analysis
+% From: experimental data
 
+% INPUT REQUIRED: Detection performance table from experimental data
 \begin{table}[htbp]
-    \caption{Detection Performance Metrics}
+    \caption{INPUT REQUIRED: Table caption}
     \label{tab:detection}
+    % INPUT REQUIRED: Table structure matching available detection metrics
+    % Common columns: Method, Precision, Recall, F1, AUC per dataset
     \begin{tabular}{lcccccc}
         \toprule
-        \multirow{2}{*}{Method} & \multicolumn{2}{c}{Simulated} & \multicolumn{2}{c}{Aluminum} & \multicolumn{2}{c}{CFRP} \\
-        \cmidrule{2-7}
-        & Precision & Recall & Precision & Recall & Precision & Recall \\
+        % INPUT REQUIRED: Column headers (method + metrics per dataset)
         \midrule
-        MethodX & 80.1 & 84.6 & 76.2 & 80.7 & 78.3 & 82.1 \\
-        MethodY & 83.4 & 87.2 & 79.5 & 83.1 & 80.9 & 84.5 \\
-        MethodZ & 86.7 & 89.5 & 83.1 & 86.8 & 84.7 & 88.2 \\
+        % INPUT REQUIRED: Each method row with detection metrics
         \midrule
-        Proposed & \textbf{93.8} & \textbf{94.6} & \textbf{90.2} & \textbf{92.8} & \textbf{91.9} & \textbf{94.1} \\
+        % INPUT REQUIRED: Proposed method row
         \bottomrule
     \end{tabular}
 \end{table}
 
-The proposed method achieves precision exceeding 90\% and recall exceeding 92\%
-across all three datasets, substantially outperforming all baselines on both
-metrics. The balanced precision-recall performance indicates that the method
-achieves high confidence in its predictions without sacrificing coverage.
-The area under the ROC curve (AUC) for the proposed method reaches 0.97 on the
-simulated dataset, 0.94 on aluminum, and 0.95 on CFRP, compared to 0.91, 0.88,
-and 0.90 respectively for the best baseline methods.
+% INPUT REQUIRED: 1-2 paragraphs analyzing detection performance
+% If no detection data exists, write \placeholder{NEEDS: detection performance data}
 ```
 
 **Key elements:**
-- Precision-recall table (multi-row for datasets)
-- Reference to ROC figure
-- AUC values for comprehensive view
+- Precision-recall table (structured per dataset)
+- AUC or other comprehensive metrics if available
 - Balanced performance interpretation
 
 ---
@@ -407,42 +351,33 @@ and 0.90 respectively for the best baseline methods.
 ### File: 5-6-ablation.tex
 
 ```latex
-paragraph{5.6 Ablation Study}
+ paragraph{5.6 Ablation Study}
 
-We conduct ablation experiments to quantify the contribution of each key
-component to the overall performance. Table~\ref{tab:ablation} reports detection
-accuracy when removing individual components.
+% INPUT REQUIRED: Context paragraph describing the ablation study
+% From: experimental data (ablation results)
 
+% INPUT REQUIRED: Ablation results table from experimental data
 \begin{table}[htbp]
-    \caption{Ablation Study Results}
+    \caption{INPUT REQUIRED: Table caption}
     \label{tab:ablation}
     \begin{tabular}{lc}
         \toprule
-        Configuration & Detection Accuracy (\%) \\
+        Configuration & INPUT REQUIRED: Metric \\
         \midrule
-        Full model (all components) & \textbf{94.2} \\
-        Without Component A & 89.8 (\textbf{-4.4}) \\
-        Without Attention mechanism & 91.5 (\textbf{-2.7}) \\
-        Without Component B & 92.1 (\textbf{-2.1}) \\
-        Without A and B & 87.3 (\textbf{-6.9}) \\
-        Without Attention and A & 85.8 (\textbf{-8.4}) \\
+        % INPUT REQUIRED: Full model result row
+        % INPUT REQUIRED: Each ablation variant row
         \bottomrule
     \end{tabular}
 \end{table}
 
-The ablation results demonstrate that Component A contributes the largest
-individual improvement (+4.4\% accuracy), followed by the Attention mechanism
-(+2.7\%) and Component B (+2.1\%). Removing both Component A and the Attention
-mechanism results in an 8.4\% accuracy drop, indicating a synergistic effect
-between these components. Component B's contribution is more modest but still
-significant, providing robustness to material variability. These findings
-validate the architectural decisions made during methodology design and
-identify Component A as the primary performance driver.
+% INPUT REQUIRED: 1-2 paragraphs analyzing ablation results
+% Discuss which component contributes most and why
+% If no ablation data exists, write \placeholder{NEEDS: ablation study results}
 ```
 
 **Key elements:**
 - Ablation table showing removal of individual components
-- Delta from full model shown in parentheses
+- Delta or percentage change shown where data available
 - Synergy note when multiple components removed
 - Architectural validation conclusion
 
@@ -450,24 +385,24 @@ identify Component A as the primary performance driver.
 
 ## Step 4: Statistical Significance
 
-For each result claim involving improvement or comparison, include statistical significance:
+For each result claim involving improvement or comparison, include statistical significance if documented in experimental data. **Do not invent significance values.**
 
 ### Standard Test
 ```latex
-The improvement is statistically significant (p $<$ 0.01, Wilcoxon signed-rank test,
-N = 10 independent runs).
+% INPUT REQUIRED: Statistical test and p-value from experimental data
+% If significance not computed, write \placeholder{NEEDS: statistical significance}
 ```
 
 ### Multiple Comparisons
 ```latex
-After Bonferroni correction for multiple comparisons, the improvement remains
-significant (adjusted p $<$ 0.017).
+% INPUT REQUIRED: Correction method and adjusted p-value from experimental data
+% If multiple comparison correction not applied, skip this
 ```
 
 ### Confidence Intervals
 ```latex
-The mean SNR improvement is 12.4 dB (95\% CI: 11.8--13.0 dB), measured over
-10 independent experimental runs with different random seeds.
+% INPUT REQUIRED: Confidence intervals from experimental data
+% Include metric name, mean, CI range, and number of runs
 ```
 
 ---
@@ -513,15 +448,15 @@ After writing all paragraph files, report to user:
 结果章节写作完成。
 
 覆盖内容：
-- 5-1-simulated.tex：Simulated dataset results (SNR: 12.4 dB, Acc: 94.2%)
-- 5-2-aluminum.tex：Aluminum dataset results (SNR: 9.8 dB, Acc: 91.5%)
-- 5-3-cfrp.tex：CFRP dataset results (SNR: 11.1 dB, Acc: 93.0%)
-- 5-4-generalization.tex：Cross-domain generalization (best: 87.3%)
-- 5-5-detection.tex：Detection precision/recall analysis
-- 5-6-ablation.tex：Ablation study (Component A: +4.4%)
+- 5-1-simulated.tex：Simulated dataset results (from experimental data)
+- 5-2-aluminum.tex：Aluminum dataset results (from experimental data)
+- 5-3-cfrp.tex：CFRP dataset results (from experimental data)
+- 5-4-generalization.tex：Cross-domain generalization (from experimental data)
+- 5-5-detection.tex：Detection precision/recall analysis (from experimental data)
+- 5-6-ablation.tex：Ablation study results (from experimental data)
 
 所有表格使用 Elsevier booktabs 格式。
-统计显著性已标注（p < 0.01）。
+所有数值来自实验数据，未虚构。
 
 下一步：aw-write-discussion — 撰写讨论章节
 ```

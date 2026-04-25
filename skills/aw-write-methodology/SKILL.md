@@ -16,6 +16,27 @@ Write the Methodology section of an academic paper (Phase 3 of IMRAD) by generat
 
 This skill is a **section-writing subagent** called by the Wave Executor during Phase 2. It receives a specific task (e.g., "Write 3.2 Architecture Components") and outputs a single paragraph `.tex` file.
 
+## ⚠️ Factual Integrity (Highest Priority)
+
+All examples in this skill are FORMAT TEMPLATES only. Follow these rules:
+
+### Rule 1: Write Only from Input Files
+- If `.planning/methodology.md`, `.planning/research-brief.json`, or `.planning/literature.md` does **not** contain a specific fact, number, or claim — **do not invent it**
+- Mark missing content with `\placeholder{NEEDS: description of what is missing}`
+- Less content is better than fabricated content
+
+### Rule 2: Examples Are Format Templates — Never Copy Numbers
+- Every `% INPUT REQUIRED` marker below must be filled from actual input data
+- **Never copy example values, citations, or claims into the output**
+
+### Rule 3: When Uncertain, Hedge
+- "suggests" / "indicates" / "appears" — not "proves" / "demonstrates conclusively"
+- "one possible explanation is" / "this pattern may indicate"
+- "further investigation is needed to determine"
+
+### Rule 4: Self-Check Before Finalizing
+Ask: Is every claim in this paragraph directly supported by an input file? If not, remove it or mark as `\placeholder{}`.
+
 ## When to Trigger
 
 - `aw-execute` wave executor calls this skill with a specific task
@@ -64,28 +85,24 @@ paragraph{Architecture Components}
 
 ### Architecture Table Format
 
-Include an architecture table for the U-Net encoder-decoder:
+Include an architecture table from methodology.md. **Do not invent architecture details.**
 
 ```latex
+% INPUT REQUIRED: Architecture table caption from methodology.md
+% If no architecture is described, write \placeholder{NEEDS: architecture description}
 \begin{table}[htbp]
 \centering
-\caption{U-Net Encoder-Decoder Architecture}
+\caption{INPUT REQUIRED: Architecture table caption}
 \label{tab:arch}
+% INPUT REQUIRED: Fill table rows from methodology.md architecture description
+% Use booktabs format: \toprule, \midrule, \bottomrule
+% Typical columns: Stage, Layer, Output Channels, Spatial Resolution
+% Fill values from actual architecture, not from example
 \begin{tabular}{lccc}
     \toprule
     Stage & Layer & Output Channels & Spatial Resolution \\
     \midrule
-    Input & — & 1 & L = 512 \\
-    Enc1 & Conv(3x3)+BN+ReLU $\times$2 & 32 & L \\
-    Enc2 & MaxPool1D(2)+Conv$\times$2 & 64 & L/2 \\
-    Enc3 & MaxPool1D(2)+Conv$\times$2 & 128 & L/4 \\
-    Enc4 & MaxPool1D(2)+Conv$\times$2 & 256 & L/8 \\
-    Bottleneck & MaxPool1D(2)+Conv$\times$2+Dropout(0.1) & 512 & L/16 \\
-    Dec4 & UpConv+Concat+Conv$\times$2 & 256 & L/8 \\
-    Dec3 & UpConv+Concat+Conv$\times$2 & 128 & L/4 \\
-    Dec2 & UpConv+Concat+Conv$\times$2 & 64 & L/2 \\
-    Dec1 & UpConv+Concat+Conv$\times$2 & 32 & L \\
-    Output & Conv(1x1) & 1 & L \\
+    % INPUT REQUIRED: Each architecture stage row
     \bottomrule
 \end{tabular}
 \end{table}
@@ -93,52 +110,39 @@ Include an architecture table for the U-Net encoder-decoder:
 
 ### Loss Function Formula
 
-Include the mixed loss formula:
+Include the loss function from methodology.md. **Do not invent loss terms or weights.**
 
 ```latex
+% INPUT REQUIRED: Loss function from methodology.md
+% Include the actual formula and term weights. Do not invent terms.
 \subsection{Loss Function}
 
-The network is trained with a mixed loss function combining MSE, CCC, and SSIM terms:
-
+% INPUT REQUIRED: Description of the loss function from methodology.md
+% Include the formula:
 \[
-\mathcal{L}_{total} = \alpha \cdot \mathcal{L}_{MSE} + \beta \cdot \mathcal{L}_{CCC} + \gamma \cdot \mathcal{L}_{SSIM}
-\]
-where $\alpha = 0.5$, $\beta = 0.3$, $\gamma = 0.2$.
-
-The CCC term measures waveform morphology preservation:
-\[
-\mathcal{L}_{CCC} = 1 - \frac{2\text{Cov}(y_{true}, y_{pred})}{\text{Var}(y_{true}) + \text{Var}(y_{pred}) + (\bar{y}_{true} - \bar{y}_{pred})^2}
+\mathcal{L}_{total} = \text{INPUT REQUIRED: Loss formula with actual terms and weights}
 \]
 
-The SSIM term measures local structure preservation:
-\[
-\mathcal{L}_{SSIM} = 1 - \frac{(2\mu_x\mu_y + C_1)(2\sigma_{xy} + C_2)}{(\mu_x^2 + \mu_y^2 + C_1)(\sigma_x^2 + \sigma_y^2 + C_2)}
-\]
+% INPUT REQUIRED: Define each loss term individually
+% If no loss function is documented, write \placeholder{NEEDS: loss function}
 ```
 
 ### Key Hyperparameters Table
 
-Include hyperparameters table:
+Include hyperparameters from methodology.md. **Do not invent hyperparameters.**
 
 ```latex
+% INPUT REQUIRED: Training hyperparameters from methodology.md
+% Fill each row from actual hyperparameters. Do not invent values.
 \begin{table}[htbp]
 \centering
-\caption{Training Hyperparameters}
+\caption{INPUT REQUIRED: Hyperparameters table caption}
 \label{tab:hyperparams}
 \begin{tabular}{ll}
     \toprule
     Parameter & Value \\
     \midrule
-    Optimizer & Adam \\
-    Learning rate & $1\times10^{-3}$ \\
-    Batch size & 64 \\
-    Window size & 512 samples \\
-    Overlap & 256 samples (50\%) \\
-    SNR range & -10 dB to +20 dB \\
-    Early stopping & Patience = 10 epochs \\
-    Weight init & He normal (fan-out) \\
-    Dropout & 0.1 at bottleneck \\
-    Gradient clipping & max\_norm = 1.0 \\
+    % INPUT REQUIRED: Fill rows from methodology.md hyperparameters section
     \bottomrule
 \end{tabular}
 \end{table}
@@ -183,29 +187,26 @@ Also read `.planning/research-brief.json` to understand the novelty claims that 
 For each paragraph file, extract relevant content from methodology.md:
 
 **3-1-overview.tex (Method Overview):**
-- Describe the problem: laser ultrasound NDT denoising
-- High-level approach: U-Net based signal denoising
-- Key motivation: AWGN noise model, sim-to-real gap challenge
-- Expected generalization behavior
+- % INPUT REQUIRED: Problem domain and high-level approach from methodology.md and research-brief.json
+- % INPUT REQUIRED: Key motivation for the proposed method
+- % INPUT REQUIRED: Expected behavior or generalization goals
 
 **3-2-architecture.tex (Architecture):**
-- Full encoder-decoder table (Table~\ref{tab:arch})
-- Skip connections with residual concatenation
-- Attention gating (Ablation A6)
-- Loss function with mixed terms
-- Hyperparameters table (Table~\ref{tab:hyperparams})
+- % INPUT REQUIRED: Architecture table from methodology.md (fill Table~\ref{tab:arch})
+- % INPUT REQUIRED: Key architectural components (skip connections, attention, etc.)
+- % INPUT REQUIRED: Loss function with formula and terms
+- % INPUT REQUIRED: Hyperparameters table from methodology.md (fill Table~\ref{tab:hyperparams})
 
 **3-3-innovations.tex (Key Innovations):**
-- Mixed loss with CCC + SSIM for waveform morphology preservation
-- Attention-gated skip connections for suppressing irrelevant signal regions
-- SNR-robust training with uniform distribution (-10 to +20 dB)
-- Sim-to-experimental domain adaptation via diverse noise modeling
+- % INPUT REQUIRED: Novel contributions from research-brief.json novelty claims
+- % INPUT REQUIRED: Architectural innovations described in methodology.md
+- % INPUT REQUIRED: Training strategies or design choices that are novel
 
 **3-4-experiment-preview.tex (Experiment Setup Preview):**
-- Dataset overview (training: 10K pairs, validation: 1K, test sets: sim+exp)
-- Materials: Aluminum 2024-T3 (60%), CFRP laminate (40%)
-- Baseline methods preview (Wiener, DWT, BM3D, Sparse coding, Bandpass)
-- Evaluation metrics preview (SNR improvement, CCC, WSI, F1, POD)
+- % INPUT REQUIRED: Dataset overview from methodology.md experiment design section
+- % INPUT REQUIRED: Materials and defect types studied
+- % INPUT REQUIRED: Baseline methods for comparison
+- % INPUT REQUIRED: Evaluation metrics for performance assessment
 
 ### Step 3: Write Paragraph File
 
@@ -302,7 +303,7 @@ If `.planning/research-brief.json` does not exist:
 ### Incomplete Content
 
 If the assigned task references content not present in methodology.md:
-- Write what is available with a note: "% TODO: detail missing — verify during review"
+- Write what is available; mark gaps with `\placeholder{NEEDS: description of missing content}`
 - Report the gap in the completion message
 
 ### Compilation Check
@@ -351,5 +352,5 @@ Before reporting completion, verify:
 - [ ] Architecture table uses `booktabs` format
 - [ ] Loss function formula uses `\[ ... \]` display math
 - [ ] No hardcoded figure/table numbers (use `\ref{}`)
-- [ ] No TODO/FIXME placeholders
+- [ ] No TODO/FIXME placeholders (use `\placeholder{}` for missing content)
 - [ ] File saved to correct path `sections/methodology/{filename}.tex`

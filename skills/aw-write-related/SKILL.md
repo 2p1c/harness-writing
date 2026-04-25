@@ -9,6 +9,27 @@ description: Write related work section paragraphs for academic papers using wav
 
 Write related work section paragraphs organized by categories from literature.md. Each invocation writes one paragraph file for a specific task (categorization, method discussion, gap, or transition). Tasks are written in parallel when assigned to the same wave (no file overlap).
 
+## ⚠️ Factual Integrity (Highest Priority)
+
+All examples in this skill are FORMAT TEMPLATES only. Follow these rules:
+
+### Rule 1: Write Only from Input Files
+- If `.planning/literature.md`, `.planning/research-brief.json`, or `.planning/methodology.md` does **not** contain a specific fact, number, or claim — **do not invent it**
+- Mark missing content with `\placeholder{NEEDS: description of what is missing}`
+- Less content is better than fabricated content
+
+### Rule 2: Examples Are Format Templates — Never Copy Numbers
+- Every `% INPUT REQUIRED` marker below must be filled from actual input data
+- **Never copy example values, citations, or claims into the output**
+
+### Rule 3: When Uncertain, Hedge
+- "suggests" / "indicates" / "appears" — not "proves" / "demonstrates conclusively"
+- "one possible explanation is" / "this pattern may indicate"
+- "further investigation is needed to determine"
+
+### Rule 4: Self-Check Before Finalizing
+Ask: Is every claim in this paragraph directly supported by an input file? If not, remove it or mark as `\placeholder{}`.
+
 ## When to Trigger
 
 - `/aw-execute` assigns a wave task with `section: related-work`
@@ -202,8 +223,10 @@ Output:
 - Use vague language ("many approaches", "significant progress")
 - Make unsubstantiated claims (cite to support)
 - Use bullet lists in related work (prose paragraphs only)
-- Include TODO or FIXME placeholders
+- Include TODO or FIXME placeholders (use `\placeholder{}` instead)
 - Write 2-4 as a bullet list (transition is a prose paragraph)
+- Invent papers, citations, or claims not present in literature.md
+- Copy example text from this skill into the output
 
 ## Task Execution Workflow
 
@@ -215,42 +238,32 @@ Output:
 6. **Write .tex files** with correct `\paragraph{}` blocks, labels, and citations
 7. **Verify** each file compiles standalone
 
-## File Output Example
+## File Output Template
 
-**File:** `manuscripts/my-paper/sections/related-work/2-1-categorization.tex`
+**Do not copy the example content below.** It is a format template only.
+
+**File:** `manuscripts/{paper-name}/sections/related-work/2-1-categorization.tex`
 
 ```latex
  paragraph{Categorization of Related Work}
 \label{sec:related:categorization}
 
-Existing approaches to low-light image enhancement can be broadly organized
-into three categories: classical signal processing methods that operate on
-histogram redistribution \cite{pizer1987adaptive,celik2011contextual}, model-based
-optimization techniques that impose priors on the latent illumination map
-\cite{lorenz2021learning,wei2020exposure}, and learning-based methods that
-train deep networks to learn the enhancement mapping end-to-end
-\cite{lorenz2021learning,guo2020lime}. Each category offers distinct trade-offs
-in computational efficiency, perceptual quality, and generalization to diverse
-capture conditions.
+% INPUT REQUIRED: Opening paragraph organizing related work into categories
+% From: literature.md section headings and thematic groupings
+% Structure: Broad landscape → explicit category naming → high-level overview
+% Use \cite{} for citations. Do not invent categories or papers.
 ```
 
-**File:** `manuscripts/my-paper/sections/related-work/2-2-methodA.tex`
+**File:** `manuscripts/{paper-name}/sections/related-work/2-2-methodA.tex`
 
 ```latex
- paragraph{Classical Signal Processing Methods}
+ paragraph{INPUT REQUIRED: Category name}
 \label{sec:related:methodA}
 
-Classical approaches to low-light enhancement rely on hand-crafted
-transformations of image statistics. Histogram equalization aims to
-redistribute intensity values to match a uniform distribution, improving
-global contrast \cite{pizer1987adaptive}. Contextual contrast enhancement
-extends this by considering local neighborhood statistics \cite{celik2011contextual}.
-While these methods are computationally efficient and require no training
-data, they operate pixel-wise without understanding semantic content,
-leading to artifacts in complex scenes with mixed lighting conditions.
-Furthermore, they do not model the physical image formation process,
-limiting their ability to recover detailed textures in severely underexposed
-regions \cite{guo2020lime}.
+% INPUT REQUIRED: Discuss methods in this category
+% From: literature.md entries for this category
+% Structure: What characterizes this category → key representative work with \cite{} → "However," limitation → connection to gap
+% Do not invent methods, citations, or limitations not in literature.md
 ```
 
 ## Integration

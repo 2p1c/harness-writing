@@ -1,0 +1,10 @@
+\subsection{Training Scheme}
+\label{sec:training}
+
+The network is trained using the AdamW optimizer~\cite{Loshchilov2019} with an initial learning rate of $1 \times 10^{-3}$, decoupled weight decay set to $1 \times 10^{-4}$, and mini-batch size of $32$. The learning rate follows a cosine annealing schedule from $1 \times 10^{-3}$ to $1 \times 10^{-4}$ over the full training run. Dropout with probability $p = 0.2$ is applied at the fusion layers; L2 regularization (weight decay) further constrains overfitting. Batch normalization is disabled to preserve frequency-specific characteristics of the acoustic signals.
+
+\textbf{Data augmentation.} During training, each input signal undergoes randomized augmentation on a per-sample basis: random time-shift by $\pm 12.5\%$ of the signal length, additive Gaussian noise injection at SNR levels sampled uniformly from $[-6, +6]$~dB relative to the clean signal, and amplitude scaling uniformly sampled from $[0.8, 1.2]$. Augmentation is applied independently to the limited-averaging input and the high-averaging target to maintain pairing integrity.
+
+\textbf{Validation and early stopping.} The training set comprises $80\%$ of the intact aluminum specimen paired data; $20\%$ is held out as a validation set for monitoring convergence. Training terminates when the validation reconstruction loss shows no improvement for $15$ consecutive epochs, restoring the best-validated model weights. On the hardware configuration used (single NVIDIA RTX 4090, 24~GB memory), a full training run completes in approximately $180$ epochs.
+
+\textbf{Model scale.} PMDF-Net contains approximately $4.2 \times 10^6$ trainable parameters. A forward pass through both branches and the fusion module incurs approximately $1.8 \times 10^9$ floating-point operations (FLOPs) for an input signal of length $L = 1024$. The inference latency on the RTX 4090 is $2.3 \pm 0.1$~ms per signal, satisfying the real-time requirement for practical inspection throughput.

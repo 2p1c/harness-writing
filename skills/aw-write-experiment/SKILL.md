@@ -16,6 +16,27 @@ Write the Experiment section of an academic paper (Phase 4 of IMRAD) by generati
 
 This skill is a **section-writing subagent** called by the Wave Executor during Phase 2. It receives a specific task (e.g., "Write 4.1 Dataset Description") and outputs a single paragraph `.tex` file.
 
+## ⚠️ Factual Integrity (Highest Priority)
+
+All examples in this skill are FORMAT TEMPLATES only. Follow these rules:
+
+### Rule 1: Write Only from Input Files
+- If `.planning/methodology.md`, `.planning/research-brief.json`, or `.planning/literature.md` does **not** contain a specific fact, number, or claim — **do not invent it**
+- Mark missing content with `\placeholder{NEEDS: description of what is missing}`
+- Less content is better than fabricated content
+
+### Rule 2: Examples Are Format Templates — Never Copy Numbers
+- Every `% INPUT REQUIRED` marker below must be filled from actual input data
+- **Never copy example values, citations, or claims into the output**
+
+### Rule 3: When Uncertain, Hedge
+- "suggests" / "indicates" / "appears" — not "proves" / "demonstrates conclusively"
+- "one possible explanation is" / "this pattern may indicate"
+- "further investigation is needed to determine"
+
+### Rule 4: Self-Check Before Finalizing
+Ask: Is every claim in this paragraph directly supported by an input file? If not, remove it or mark as `\placeholder{}`.
+
 ## When to Trigger
 
 - `aw-execute` wave executor calls this skill with a specific task
@@ -45,20 +66,22 @@ Paragraph files written to `sections/experiment/` with naming convention `{task-
 
 ### Dataset Table Format
 
+**Do not invent dataset details.** Fill from methodology.md experiment design section.
+
 ```latex
+% INPUT REQUIRED: Dataset table from methodology.md
+% If no dataset is described, write \placeholder{NEEDS: dataset description}
 \begin{table}[htbp]
 \centering
-\caption{Experimental Datasets}
+\caption{INPUT REQUIRED: Dataset table caption}
 \label{tab:datasets}
+% INPUT REQUIRED: Fill table rows from methodology.md experiment design section
+% Columns vary by paper. Typical columns: Test Set, Source, Material, Size, SNR Range
 \begin{tabular}{llcccc}
     \toprule
-    Test Set & Source & Material & Defects & Signal Count & SNR Range \\
+    % INPUT REQUIRED: Column headers matching the dataset
     \midrule
-    Sim-train & FEM simulation & Al + CFRP & FBH, SDH, delamination & 10,000 pairs & -10 to +20 dB \\
-    Sim-val & FEM simulation & Al + CFRP & FBH, SDH, delamination & 1,000 pairs & -10 to +20 dB \\
-    Sim-test & Held-out FEM & Al + CFRP & FBH, SDH, delamination & 500 pairs & -10 to +20 dB \\
-    Al-exp & Experimental & Al 2024-T3 & FBH (3, 5, 8 mm depth) & 50 A-scans & -5 to +5 dB \\
-    CFRP-exp & Experimental & CFRP laminate & Delamination, fiber breakage & 50 A-scans & -8 to +2 dB \\
+    % INPUT REQUIRED: Each dataset row (training, validation, test sets)
     \bottomrule
 \end{tabular}
 \end{table}
@@ -66,20 +89,22 @@ Paragraph files written to `sections/experiment/` with naming convention `{task-
 
 ### Baseline Configuration Table
 
+**Do not invent baseline methods.** Fill from methodology.md experiment design section.
+
 ```latex
+% INPUT REQUIRED: Baseline methods table from methodology.md
+% If no baselines are described, write \placeholder{NEEDS: baseline methods}
 \begin{table}[htbp]
 \centering
-\caption{Baseline Methods}
+\caption{INPUT REQUIRED: Baseline methods caption}
 \label{tab:baselines}
+% INPUT REQUIRED: Fill table rows from methodology.md baselines section
+% Typical columns: Method, Configuration, Implementation
 \begin{tabular}{lll}
     \toprule
     Method & Configuration & Implementation \\
     \midrule
-    Wiener filter & Adaptive, 5x5 local neighborhood & SciPy signal.wiener \\
-    DWT denoising & Daubechies-4, 4-level decomp., soft thresholding & PyWavelets wtmm.denoise \\
-    BM3D & Block matching 3D, 8x8x8 blocks, sigma\_est=auto & bm3d package \\
-    Sparse coding & Overcomplete DCT (256 atoms), OMP reconstruction & SPAMS toolbox \\
-    Bandpass filter & Butterworth 4th order, passband 1--10 MHz & SciPy signal.butterworth \\
+    % INPUT REQUIRED: Each baseline method row
     \bottomrule
 \end{tabular}
 \end{table}
@@ -87,30 +112,18 @@ Paragraph files written to `sections/experiment/` with naming convention `{task-
 
 ### Evaluation Metrics Definitions
 
+**Define only metrics documented in methodology.md.** Do not invent metric names or formulas.
+
 ```latex
 \subsection{Evaluation Metrics}
 
-We evaluate denoising performance using five metrics.
+% INPUT REQUIRED: Brief intro to evaluation metrics from methodology.md
 
-\textbf{SNR Improvement} measures the gain in signal-to-noise ratio:
-\[
-\Delta\text{SNR} = 20 \log_{10}(\text{RMS}_{denoised}) - 20 \log_{10}(\text{RMS}_{noisy})
-\]
-where RMS denotes the root mean square of the signal amplitude.
-
-\textbf{Mean Squared Error} quantifies the squared difference to the clean reference:
-\[
-\text{MSE} = \frac{1}{N}\|y_{clean} - y_{denoised}\|^2
-\]
-
-\textbf{Lin's Concordance Correlation Coefficient} (CCC) measures waveform morphology preservation independent of scale:
-\[
-\text{CCC} = \frac{2\text{Cov}(y_{true}, y_{pred})}{\text{Var}(y_{true}) + \text{Var}(y_{pred}) + (\bar{y}_{true} - \bar{y}_{pred})^2}
-\]
-
-\textbf{Waveform Similarity Index} (WSI) measures zero-lag normalized cross-correlation between denoised and clean waveforms.
-
-\textbf{F1-score for Defect Detection} evaluates the probability of detecting defect echoes in denoised A-scans via peak detection, at SNR = -5 dB.
+% INPUT REQUIRED: For each metric documented in methodology.md:
+% - Metric name and what it measures
+% - Formula using \[ ... \] display math
+% - Brief description of interpretation
+% If no metrics are documented, write \placeholder{NEEDS: evaluation metrics}
 ```
 
 ## Workflow
@@ -150,37 +163,25 @@ Also read `.planning/research-brief.json` for novelty claims relevant to experim
 ### Step 2: Extract Content per Task
 
 **4-1-datasets.tex — Dataset Description:**
-- Training set: 10,000 paired noisy-clean A-scan signals from FEM
-- Validation: 1,000 held-out pairs
-- Test sets: Sim-test (500), Al-exp (50), CFRP-exp (50)
-- Materials: Aluminum 2024-T3 (60%), CFRP laminate (40%)
-- Defect types: FBH, SDH, delamination, fiber breakage
-- FEM parameters: Aluminum $v_L=6320$ m/s, CFRP $v_L=3000$ m/s
-- Signal specs: 2048 samples at 100 MHz, SNR -10 to +20 dB
+- % INPUT REQUIRED: Training set composition (size, source, characteristics) from methodology.md
+- % INPUT REQUIRED: Validation and test set splits
+- % INPUT REQUIRED: Materials, defect types, and signal specifications
+- % INPUT REQUIRED: Key dataset parameters (sample rate, signal length, SNR range)
 
 **4-2-baselines.tex — Baseline Methods:**
-- Wiener filter (adaptive, 5x5 neighborhood)
-- DWT denoising (Daubechies-4, 4-level, soft thresholding)
-- BM3D (block matching 3D, 8x8x8 blocks)
-- Sparse coding (overcomplete DCT, 256 atoms, OMP)
-- Bandpass filter (Butterworth 4th order, 1-10 MHz)
-- Include justification for why these are fair comparisons
+- % INPUT REQUIRED: Each baseline method name and configuration from methodology.md
+- % INPUT REQUIRED: Implementation details or library references
+- % INPUT REQUIRED: Justification for why these are fair comparisons
 
 **4-3-metrics.tex — Evaluation Metrics:**
-- SNR improvement: $\Delta\text{SNR}$ target 8-12 dB
-- MSE: target < 1.5 x 10^-3
-- CCC: target > 0.95
-- WSI: target > 0.90
-- F1-score: target > 0.85 at -5 dB
-- POD: Probability of Detection, slope > 2.5 dB^-1
+- % INPUT REQUIRED: Primary evaluation metric with formula
+- % INPUT REQUIRED: Secondary metrics with formulas or definitions
+- % INPUT REQUIRED: Target values or expected ranges if documented
 
 **4-4-ablation.tex — Ablation Studies:**
-- A1: Loss function (MSE-only vs. MSE+CCC vs. Full)
-- A2: Architecture depth (3-level vs. 4-level vs. 5-level)
-- A3: Skip connections (no skip vs. concat vs. concat+attention)
-- A4: Training SNR distribution (fixed +10 dB vs. uniform -10 to +20 dB)
-- A5: Input window size (256 vs. 512 vs. 1024)
-- A6: Attention gating (with vs. without)
+- % INPUT REQUIRED: Ablation study variants from methodology.md
+- % INPUT REQUIRED: What each variant removes or modifies
+- % INPUT REQUIRED: Expected impact or hypothesis for each ablation
 
 ### Step 3: Write Paragraph File
 
@@ -231,7 +232,7 @@ Same as `aw-write-methodology`:
 ### Incomplete Experiment Design
 
 If a section is missing content:
-- Write available content with gap note
+- Write available content with `\placeholder{NEEDS: description of missing content}`
 - Report in completion message
 
 ## File Locations
@@ -269,5 +270,5 @@ manuscripts/[paper-name]/
 - [ ] Baseline table uses `booktabs`
 - [ ] Metric definitions include formulas
 - [ ] No hardcoded numbers in cross-references
-- [ ] No TODO/FIXME placeholders
+- [ ] No TODO/FIXME placeholders (use `\placeholder{}` for missing content)
 - [ ] File saved to correct path `sections/experiment/{filename}.tex`

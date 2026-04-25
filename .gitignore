@@ -1,21 +1,14 @@
 # Academic Writing Template - Content Exclusions
 # Keep folder structure, ignore personal content
 
-# Personal corpus and references
-corpus/*
-!corpus/.gitkeep
+# Personal corpus and references (removed — empty dirs no longer exist)
+# corpus/*
+# drafts/*
+# figures/*
+# projects/*
 
-# Draft materials
-drafts/*
-!drafts/.gitkeep
-
-# Manuscript content
-manuscripts/*
-!manuscripts/.gitkeep
-
-# Figure collections
-figures/*
-!figures/.gitkeep
+# Manuscript content (tracked during framework development)
+# manuscripts/*
 
 # Temporary files
 *.tmp
@@ -69,17 +62,7 @@ scripts/
 # Local agent skills mirror
 .agents/
 
-# GSDAW local-only planning files (not pushed to remote)
-# === Ephemeral state (never push) ===
-.planning/STATE.md
-.planning/ROADMAP.md
-.planning/wave-plan.md
-.planning/HANDOFF.json
-.planning/PROJECT.md
-.planning/phase-*-design.md
-.planning/phases/
-.planning/research-brief.json
-.planning/literature.md
-.planning/methodology.md
-.planning/research-briefs/
-
+# Zotero temp data (ephemeral — never push)
+.planning/.zotero-temp*
+.planning/.zotero-temp*.json
+.planning/.zotero-temp*.md
